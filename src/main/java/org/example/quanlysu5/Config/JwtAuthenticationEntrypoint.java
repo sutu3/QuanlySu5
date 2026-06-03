@@ -18,6 +18,7 @@ public class JwtAuthenticationEntrypoint implements AuthenticationEntryPoint {
             throws IOException, ServletException {
         ErrorCode errorCode= ErrorCode.UNAUTHENTICATED;
         response.setStatus(errorCode.getStatus().value());
+        response.setCharacterEncoding("UTF-8");
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         ApiResponse<?> apiResponse= ApiResponse.builder()
                 .code(errorCode.getCode())

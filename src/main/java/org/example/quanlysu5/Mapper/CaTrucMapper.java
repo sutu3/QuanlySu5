@@ -1,7 +1,7 @@
 package org.example.quanlysu5.Mapper;
 
 import org.example.quanlysu5.Dto.Request.CaTrucRequest;
-import org.example.quanlysu5.Dto.Response.CaTrucResponse;
+import org.example.quanlysu5.Dto.Response.CaTruc.CaTrucResponse;
 import org.example.quanlysu5.Form.CaTrucForm;
 import org.example.quanlysu5.Module.CaTrucEntity;
 import org.mapstruct.Mapper;

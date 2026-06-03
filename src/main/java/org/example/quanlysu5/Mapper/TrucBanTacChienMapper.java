@@ -1,8 +1,7 @@
 package org.example.quanlysu5.Mapper;
 
 import org.example.quanlysu5.Dto.Request.TrucBanTacChienRequest;
-import org.example.quanlysu5.Dto.Response.TrucBanTacChienResponse;
-import org.example.quanlysu5.Form.RoleUpdate;
+import org.example.quanlysu5.Dto.Response.TrucBanTacChien.TrucBanTacChienResponse;
 import org.example.quanlysu5.Form.TrucBanTacChienForm;
 import org.example.quanlysu5.Module.TrucBanTacChienEntity;
 import org.mapstruct.Mapper;

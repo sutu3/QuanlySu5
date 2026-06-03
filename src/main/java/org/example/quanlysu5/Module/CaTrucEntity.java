@@ -36,11 +36,11 @@ public class CaTrucEntity extends BaseEntity{
     String ghichu;
 
     @ManyToOne
-    @JoinColumn(name = "id_truc_ban_tac_chien",nullable = false)
+    @JoinColumn(name = "id_truc_ban_tac_chien")
     TrucBanTacChienEntity trucBanTacChien;
 
     @ManyToOne
-    @JoinColumn(name = "id_truc_chi_huy",nullable = false)
+    @JoinColumn(name = "id_truc_chi_huy")
     TrucChiHuyEntity trucChiHuy;
 
     @OneToMany(mappedBy="caTruc")

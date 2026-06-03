@@ -1,7 +1,7 @@
 package org.example.quanlysu5.Mapper;
 
 import org.example.quanlysu5.Dto.Request.DonviRequest;
-import org.example.quanlysu5.Dto.Response.DonViResponse;
+import org.example.quanlysu5.Dto.Response.DonVi.DonViResponse;
 import org.example.quanlysu5.Module.DonViEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

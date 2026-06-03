@@ -7,7 +7,8 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.example.quanlysu5.Dto.ApiResponse;
 import org.example.quanlysu5.Dto.Request.CaTrucRequest;
-import org.example.quanlysu5.Dto.Response.CaTrucResponse;
+import org.example.quanlysu5.Dto.Response.CaTruc.CaTrucResponse;
+import org.example.quanlysu5.Dto.Response.CanhBaoCaTrucResponse;
 import org.example.quanlysu5.Form.CaTrucForm;
 import org.example.quanlysu5.Service.CaTrucService;
 import org.springframework.web.bind.annotation.*;
@@ -52,6 +53,18 @@ public class CaTrucController {
                 .code(0)
                 .build();
     }
+
+        @GetMapping("/canh-bao")
+        public ApiResponse<CanhBaoCaTrucResponse> checkCaTruc() {
+
+            return ApiResponse.<CanhBaoCaTrucResponse>builder()
+                    .success(true)
+                    .code(0)
+                    .message("Kiểm tra ca trực thành công")
+                    .Result(caTrucService.checkCaTruc())
+                    .build();
+        }
+
 
     @PostMapping
     public ApiResponse<CaTrucResponse> create(

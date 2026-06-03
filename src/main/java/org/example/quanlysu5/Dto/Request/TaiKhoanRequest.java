@@ -14,4 +14,6 @@ public class TaiKhoanRequest extends BaseEntity {
     String tenTaiKhoan;
     String tenDangNhap;
     String matkhau;
+    String donVi;
+    String vaiTro;
 }

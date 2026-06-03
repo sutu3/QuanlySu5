@@ -1,11 +1,12 @@
 package org.example.quanlysu5.Module;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
+import org.example.quanlysu5.Enum.Status;
 
-import java.awt.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -33,12 +34,17 @@ public class DonBaoCaoEntity extends BaseEntity{
     @Column(name = "thoi_gian_bao_cao", columnDefinition = "DATETIME COMMENT 'thời gian báo cáo'")
     LocalDateTime thoiGianBaoCao;
 
+    @Column(name = "thoi_gian_gui", columnDefinition = "DATETIME COMMENT 'thời gian gửi'")
+    LocalDateTime thoiGianGui;
+
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(20) COMMENT 'Trạng thái của đơn báo cáo'", nullable = false)
+    @NotNull(message = "Trạng thái không được null")
+    Status status;
+
     @Column(name = "thong_tin_vang", columnDefinition = "TEXT COMMENT 'thông tin vắng'")
     String  thongTinVang;
-
-    @ManyToOne
-    @JoinColumn(name = "accountId",nullable = false)
-    TaikhoanEntity account;
 
     @ManyToOne
     @JoinColumn(name = "idCatruc",nullable = false)

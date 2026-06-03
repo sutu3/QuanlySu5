@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface AccountRepo extends JpaRepository<TaikhoanEntity,String> , JpaSpecificationExecutor<TaikhoanEntity> {
-    Optional<TaikhoanEntity> findByTenTaiKhoan(String tenTaiKhoan);
+public interface TaiKhoanRepo extends JpaRepository<TaikhoanEntity,String> , JpaSpecificationExecutor<TaikhoanEntity> {
+    Optional<TaikhoanEntity> findByTenDangNhap(String tenTaiKhoan);
+    Optional<TaikhoanEntity> findByTenDangNhapAndMatKhau(String tenDangNhap,String matKhau);
 }

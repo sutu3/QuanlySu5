@@ -20,7 +20,7 @@ import org.example.quanlysu5.Exception.AppException;
 import org.example.quanlysu5.Exception.ErrorCode;
 import org.example.quanlysu5.Module.TaikhoanEntity;
 import org.example.quanlysu5.Module.InvalidateTokenEntity;
-import org.example.quanlysu5.Repo.AccountRepo;
+import org.example.quanlysu5.Repo.TaiKhoanRepo;
 import org.example.quanlysu5.Repo.InvalidateTokenRepo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -39,7 +39,7 @@ import java.util.UUID;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationService {
-    AccountRepo accountRepo;
+    TaiKhoanRepo taiKhoanRepo;
     InvalidateTokenRepo invalidateTokenRepo;
 
     @NonFinal
@@ -68,9 +68,9 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        var account = accountRepo
-                .findByTenTaiKhoan(request.getUserName())
-                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+        var account = taiKhoanRepo
+                .findByTenDangNhap(request.getUserName())
+                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), account.getMatKhau());
 
@@ -111,7 +111,7 @@ public class AuthenticationService {
         var userName = signedJWT.getJWTClaimsSet().getClaim("userName").toString();
 
         var user =
-                accountRepo.findByTenTaiKhoan(userName).orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
+                taiKhoanRepo.findByTenDangNhap(userName).orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
 
         var token = generateToken(user,VALID_DURATION);
 

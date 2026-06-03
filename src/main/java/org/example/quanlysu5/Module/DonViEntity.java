@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
-import org.example.quanlysu5.Enum.unitType;
 
 import java.util.List;
 
@@ -23,6 +22,9 @@ public class DonViEntity extends BaseEntity{
     @Column(columnDefinition = "VARCHAR(255) COMMENT 'tên đơn vị'", nullable = false)
     String tenDonvi;
 
+    @Column(columnDefinition = "VARCHAR(25) COMMENT 'ký hiệu đơn vị'", nullable = false)
+    String kyhieuDonvi;
+
     @Column(columnDefinition = "INTEGER COMMENT 'Tổng quân số trong đơn vị đó'",nullable = false)
     Integer quanSoTong;
 
@@ -35,7 +37,7 @@ public class DonViEntity extends BaseEntity{
     @Column(columnDefinition = "INTEGER COMMENT 'Quân số QNCN trong đơn vị đó'",nullable = false)
     Integer quanSoQncn;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_don_vi_cha")
     DonViEntity donViCha;
 

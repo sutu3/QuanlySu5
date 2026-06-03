@@ -1,9 +1,8 @@
-package org.example.quanlysu5.Dto.Response;
+package org.example.quanlysu5.Dto.Response.DonVi;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
-import org.example.quanlysu5.Enum.unitType;
 import org.example.quanlysu5.Module.BaseEntity;
 
 import java.util.List;
@@ -14,8 +13,10 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DonViResponse extends BaseEntity {
+    String maDonVi;
     String tenDonvi;
     String donViCha;
+    String kyhieuDonvi;
     int quanSoTong;
     int quanSoHsqBs;
     int quanSoSiQuan;

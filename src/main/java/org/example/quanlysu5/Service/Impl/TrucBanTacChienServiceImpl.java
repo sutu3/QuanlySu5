@@ -6,19 +6,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.example.quanlysu5.Dto.Request.TrucBanTacChienRequest;
-import org.example.quanlysu5.Dto.Response.TrucBanTacChienResponse;
+import org.example.quanlysu5.Dto.Response.TrucBanTacChien.TrucBanTacChienResponse;
 import org.example.quanlysu5.Exception.AppException;
 import org.example.quanlysu5.Exception.ErrorCode;
 import org.example.quanlysu5.Form.TrucBanTacChienForm;
 import org.example.quanlysu5.Mapper.TrucBanTacChienMapper;
-import org.example.quanlysu5.Mapper.UnitsMapper;
+import org.example.quanlysu5.Module.CaTrucEntity;
 import org.example.quanlysu5.Module.TrucBanTacChienEntity;
+import org.example.quanlysu5.Repo.CaTrucRepo;
 import org.example.quanlysu5.Repo.TrucBanTacChienRepo;
 import org.example.quanlysu5.Service.TrucBanTacChienService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
 public class TrucBanTacChienServiceImpl implements TrucBanTacChienService {
     private final TrucBanTacChienRepo trucBanTacChienRepo;
     TrucBanTacChienMapper trucBanTacChienMapper;
-
+    CaTrucRepo caTrucRepo;
     @Override
     public List<TrucBanTacChienResponse> getAllTrucBanTacChienToResponse() {
         return trucBanTacChienRepo.findAllByIsDeleted(false).stream().map(trucBanTacChienMapper::toResponse)
@@ -56,7 +57,8 @@ public class TrucBanTacChienServiceImpl implements TrucBanTacChienService {
     @Override
     public TrucBanTacChienResponse createNguoiTruc(TrucBanTacChienRequest trucBanTacChienRequest) {
         TrucBanTacChienEntity trucBanTacChien=trucBanTacChienMapper.toEntity(trucBanTacChienRequest);
-        if(trucBanTacChienRepo.findBySodienthoaiAndIsDeleted(trucBanTacChien.getSodienthoai(),false)!=null){
+        trucBanTacChien.setIsDeleted(false);
+        if(trucBanTacChienRepo.findBySodienthoaiAndIsDeleted(trucBanTacChien.getSodienthoai(),false)==null){
             throw new AppException(ErrorCode.TRUCBANTACCHIEN_IS_EXIST);
         }
 
@@ -74,6 +76,27 @@ public class TrucBanTacChienServiceImpl implements TrucBanTacChienService {
         trucBanTacChienMapper.update(trucBanTacChien,update);
         trucBanTacChienRepo.save(trucBanTacChien);
         return trucBanTacChienMapper.toResponse(trucBanTacChien);
+    }
+
+    @Override
+    public boolean canhBaoTacChien() {
+
+        LocalDate today = LocalDate.now();
+
+        List<CaTrucEntity> ds =
+                caTrucRepo.findCaTrucTacChien(today);
+
+        if(ds.isEmpty()){
+            return true;
+        }
+
+        LocalDate ngayCuoi =
+                ds.get(ds.size() - 1).getNgaytruc();
+
+        long soNgayConLai =
+                ChronoUnit.DAYS.between(today, ngayCuoi);
+
+        return soNgayConLai <= 1;
     }
 
     @Override

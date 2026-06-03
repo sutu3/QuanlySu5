@@ -1,12 +1,13 @@
 package org.example.quanlysu5.Service.Impl;
 
 
+import org.springframework.transaction.annotation.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.example.quanlysu5.Dto.Request.DonviRequest;
-import org.example.quanlysu5.Dto.Response.DonViResponse;
+import org.example.quanlysu5.Dto.Response.DonVi.DonViResponse;
 import org.example.quanlysu5.Exception.AppException;
 import org.example.quanlysu5.Exception.ErrorCode;
 import org.example.quanlysu5.Mapper.UnitsMapper;
@@ -43,6 +44,7 @@ public class DonViServiceImpl implements DonViService {
     }
 
     @Override
+    @Transactional
     public DonViResponse createDonVi(DonviRequest request) {
 
         DonViEntity donVi = unitsMapper.toEntity(request);
@@ -73,6 +75,11 @@ public class DonViServiceImpl implements DonViService {
         DonViEntity saved = DonViRepo.save(donVi);
 
         return unitsMapper.toResponse(saved);
+    }
+
+    @Override
+    public DonViEntity getById(String id) {
+        return DonViRepo.findById(id).orElseThrow(()->new AppException(ErrorCode.DONVI_NOT_FOUND));
     }
 
 }

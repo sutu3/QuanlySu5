@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.example.quanlysu5.Dto.ApiResponse;
 import org.example.quanlysu5.Dto.Request.DonviRequest;
-import org.example.quanlysu5.Dto.Response.DonViResponse;
+import org.example.quanlysu5.Dto.Response.DonVi.DonViResponse;
 import org.example.quanlysu5.Service.DonViService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

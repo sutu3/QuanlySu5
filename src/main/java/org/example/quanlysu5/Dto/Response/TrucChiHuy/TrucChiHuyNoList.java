@@ -1,4 +1,4 @@
-package org.example.quanlysu5.Dto.Response;
+package org.example.quanlysu5.Dto.Response.TrucChiHuy;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,11 +16,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class TrucBanTacChienResponse extends BaseEntity {
+public class TrucChiHuyNoList extends BaseEntity {
     String idNguoitruc;
     String tenNguoitruc;
     String capbacNguoitruc;
     String chucvuNguoitruc;
     String sodienthoai;
-    List<CaTrucEntity> caTruc;
 }

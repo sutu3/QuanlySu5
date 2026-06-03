@@ -1,7 +1,7 @@
 package org.example.quanlysu5.Mapper;
 
 import org.example.quanlysu5.Dto.Request.TaiKhoanRequest;
-import org.example.quanlysu5.Dto.Response.TaiKhoanResponse;
+import org.example.quanlysu5.Dto.Response.TaiKhoan.TaiKhoanResponse;
 import org.example.quanlysu5.Module.TaikhoanEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,6 +13,7 @@ public interface TaiKhoanMapper {
     @Mapping(target = "deletedAt", ignore = true)
     @Mapping(target = "isDeleted", ignore = true)
     @Mapping(target = "vaiTro",ignore = true)
+    @Mapping(target = "donVi",ignore = true)
     TaikhoanEntity toEntity(TaiKhoanRequest request);
 
 //    @Mapping(target = "role",ignore = true)

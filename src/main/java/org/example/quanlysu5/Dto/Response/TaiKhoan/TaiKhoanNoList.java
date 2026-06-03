@@ -1,6 +1,9 @@
-package org.example.quanlysu5.Dto.Response;
+package org.example.quanlysu5.Dto.Response.TaiKhoan;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import org.example.quanlysu5.Module.BaseEntity;
@@ -10,10 +13,9 @@ import org.example.quanlysu5.Module.BaseEntity;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class TaiKhoanResponse extends BaseEntity {
+public class TaiKhoanNoList extends BaseEntity {
     String idTaiKhoan;
     String tenTaiKhoan;
     String tenDangNhap;
     String matKhau;
-    VaiTroResponse vaiTro;
 }

@@ -7,11 +7,13 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.example.quanlysu5.Dto.ApiResponse;
 import org.example.quanlysu5.Dto.Request.DonBaoCaoRequest;
-import org.example.quanlysu5.Dto.Response.DonBaoCaoResponse;
+import org.example.quanlysu5.Dto.Response.DonBaoCao.DonBaoCaoResponse;
 import org.example.quanlysu5.Form.DonBaoCaoForm;
 import org.example.quanlysu5.Service.DonBaoCaoService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -46,13 +48,82 @@ public class DonBaoCaoController {
                 .code(0)
                 .build();
     }
+    @GetMapping("/search/DonVi/{idDonVi}/children")
+    public ApiResponse<List<DonBaoCaoResponse>> getDonBaoCaoDonViConById(
+            @PathVariable String idDonVi,
+            @RequestParam
+            @DateTimeFormat(pattern = "dd/MM/yyyy")
+            LocalDate ngayLoc) {
+
+        return ApiResponse.<List<DonBaoCaoResponse>>builder()
+                .Result(donBaoCaoService.getAllDonBaoCaoDonViConByDonVi(idDonVi,ngayLoc))
+                .message("Lấy danh sách báo cáo đơn vị con thành công")
+                .success(true)
+                .code(0)
+                .build();
+    }
+    @GetMapping("/search/DonVi/{idDonVi}")
+    public ApiResponse<DonBaoCaoResponse> getDonBaoCaoById(
+            @PathVariable String idDonVi,
+            @RequestParam
+            @DateTimeFormat(pattern = "dd/MM/yyyy")
+            LocalDate ngayLoc) {
+
+        return ApiResponse.<DonBaoCaoResponse>builder()
+                .Result(donBaoCaoService.getAllDonBaoCaoByDonVi(idDonVi,ngayLoc))
+                .message("Lấy thông tin đơn báo cáo thành công")
+                .success(true)
+                .code(0)
+                .build();
+    }
+    @PutMapping("/approve/{idDonBaoCao}")
+    public ApiResponse<DonBaoCaoResponse> approveDonBaoCao(
+            @PathVariable String idDonBaoCao) {
+
+        return ApiResponse.<DonBaoCaoResponse>builder()
+                .success(true)
+                .code(0)
+                .message("Duyệt đơn báo cáo thành công")
+                .Result(
+                        donBaoCaoService.updateStatusApprove(idDonBaoCao)
+                )
+                .build();
+    }
+
+    @PutMapping("/refuse/{idDonBaoCao}")
+    public ApiResponse<DonBaoCaoResponse> refuseDonBaoCao(
+            @PathVariable String idDonBaoCao) {
+
+        return ApiResponse.<DonBaoCaoResponse>builder()
+                .success(true)
+                .code(0)
+                .message("Từ chối đơn báo cáo thành công")
+                .Result(
+                        donBaoCaoService.updateStatusRefuse(idDonBaoCao)
+                )
+                .build();
+    }
+    @GetMapping("/search/DonVi/{idDonVi}/Status/Approvel")
+    public ApiResponse<DonBaoCaoResponse> getDonBaoCaoByIdApprove(
+            @PathVariable String idDonVi,
+            @RequestParam
+            @DateTimeFormat(pattern = "dd/MM/yyyy")
+            LocalDate ngayLoc) {
+
+        return ApiResponse.<DonBaoCaoResponse>builder()
+                .Result(donBaoCaoService.getAllDonBaoCaoByDonViApprove(idDonVi,ngayLoc))
+                .message("Lấy thông tin đơn báo cáo thành công")
+                .success(true)
+                .code(0)
+                .build();
+    }
 
     @PostMapping
     public ApiResponse<DonBaoCaoResponse> createDonBaoCao(
             @RequestBody DonBaoCaoRequest request) {
 
         return ApiResponse.<DonBaoCaoResponse>builder()
-                .Result(donBaoCaoService.createDonBaoCao(request))
+                .Result(donBaoCaoService.createDonBaoCaoQuanSoNgay(request))
                 .message("Tạo đơn báo cáo thành công")
                 .success(true)
                 .code(0)

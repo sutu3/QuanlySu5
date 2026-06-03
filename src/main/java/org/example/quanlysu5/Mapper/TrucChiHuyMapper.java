@@ -1,7 +1,7 @@
 package org.example.quanlysu5.Mapper;
 
 import org.example.quanlysu5.Dto.Request.TrucChiHuyRequest;
-import org.example.quanlysu5.Dto.Response.TrucChiHuyResponse;
+import org.example.quanlysu5.Dto.Response.TrucChiHuy.TrucChiHuyResponse;
 import org.example.quanlysu5.Form.TrucChiHuyForm;
 import org.example.quanlysu5.Module.TrucChiHuyEntity;
 import org.mapstruct.Mapper;

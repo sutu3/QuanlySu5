@@ -1,7 +1,7 @@
 package org.example.quanlysu5.Mapper;
 
 import org.example.quanlysu5.Dto.Request.DonBaoCaoRequest;
-import org.example.quanlysu5.Dto.Response.DonBaoCaoResponse;
+import org.example.quanlysu5.Dto.Response.DonBaoCao.DonBaoCaoResponse;
 import org.example.quanlysu5.Form.DonBaoCaoForm;
 import org.example.quanlysu5.Module.DonBaoCaoEntity;
 import org.mapstruct.Mapper;
@@ -16,11 +16,9 @@ public interface DonBaoCaoMapper {
     @Mapping(target = "isDeleted", ignore = true)
     @Mapping(target = "caTruc", ignore = true)
     @Mapping(target = "donVi", ignore = true)
-    @Mapping(target = "account", ignore = true)
     DonBaoCaoEntity toEntity(DonBaoCaoRequest request);
 
     DonBaoCaoResponse toResponse(DonBaoCaoEntity role);
-    @Mapping(target = "account", ignore = true)
     @Mapping(target = "donVi", ignore = true)
     void update(@MappingTarget DonBaoCaoEntity role, DonBaoCaoForm update);
 }

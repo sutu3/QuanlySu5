@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.example.quanlysu5.Dto.ApiResponse;
 import org.example.quanlysu5.Dto.Request.TrucBanTacChienRequest;
-import org.example.quanlysu5.Dto.Response.TrucBanTacChienResponse;
+import org.example.quanlysu5.Dto.Response.TrucBanTacChien.TrucBanTacChienResponse;
 import org.example.quanlysu5.Form.TrucBanTacChienForm;
 import org.example.quanlysu5.Service.TrucBanTacChienService;
 import org.springframework.web.bind.annotation.*;

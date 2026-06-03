@@ -10,7 +10,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class ChildCode {
-    DonViRepo donViRepo;
+    private final DonViRepo donViRepo;
     public String generateChildCode(DonViEntity parent) {
 
         List<DonViEntity> children =
