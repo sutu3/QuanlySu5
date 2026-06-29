@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.example.quanlysu5.Data.DaiDoiTrucThuocSuData;
+import org.example.quanlysu5.Data.PhongBanTrucThuocSuData;
 import org.example.quanlysu5.Data.TieuDoan14.TieuDoan14Data;
 import org.example.quanlysu5.Data.TieuDoan15.TieuDoan15Data;
 import org.example.quanlysu5.Data.TieuDoan16.TieuDoan16Data;
@@ -112,6 +113,11 @@ public class ApplicationInitConfig {
                 );
                 dataInitializer.saveAll(
                         DaiDoiTrucThuocSuData.getData(
+                                Su5.getMaDonVi()
+                        )
+                );
+                dataInitializer.saveAll(
+                        PhongBanTrucThuocSuData.getData(
                                 Su5.getMaDonVi()
                         )
                 );
