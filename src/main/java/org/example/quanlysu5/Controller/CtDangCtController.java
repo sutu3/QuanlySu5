@@ -149,7 +149,7 @@ public class CtDangCtController {
                 .build();
     }
 
-    @GetMapping("/search/donViCha/{idDonViCha}")
+    @GetMapping("/search/donViCha/{idDonViCha}/children")
     public ApiResponse<List<CtDangCtResponse>> getAllByDonViCha(
             @PathVariable String idDonViCha
     ) {
