@@ -105,6 +105,49 @@ public class CtDangCtController {
                 .Result(ctDangCtService.getAllByIdDonVi(idDonVi))
                 .build();
     }
+    @GetMapping("/search/DonVi/{idDonVi}/children")
+    public ApiResponse<List<CtDangCtResponse>> getDonBaoCaoDonViConById(
+            @PathVariable String idDonVi,
+            @RequestParam
+            @DateTimeFormat(pattern = "dd/MM/yyyy")
+            LocalDate ngayLoc) {
+
+        return ApiResponse.<List<CtDangCtResponse>>builder()
+                .Result(ctDangCtService.getAllCtDangCtDonViConByDonVi(idDonVi,ngayLoc))
+                .message("Lấy danh sách chính trị đảng công tác của đơn vị con thành công")
+                .success(true)
+                .code(0)
+                .build();
+    }
+    @GetMapping("/search/DonVi/{idDonVi}")
+    public ApiResponse<CtDangCtResponse> getDonBaoCaoById(
+            @PathVariable String idDonVi,
+            @RequestParam
+            @DateTimeFormat(pattern = "dd/MM/yyyy")
+            LocalDate ngayLoc) {
+
+        return ApiResponse.<CtDangCtResponse>builder()
+                .Result(ctDangCtService.getAllCtDangCtByDonVi(idDonVi,ngayLoc))
+                .message("Lấy thông tin chính trị đảng công tác thành công")
+                .success(true)
+                .code(0)
+                .build();
+    }
+    @GetMapping("/search")
+    public ApiResponse<List<CtDangCtResponse>> searchBaoCao(
+            @RequestParam String idDonVi,
+            @RequestParam LocalDate start,
+            @RequestParam LocalDate end
+    ){
+        return ApiResponse.<List<CtDangCtResponse>>builder()
+                .success(true)
+                .code(0)
+                .message("Lấy thông tin chính trị đảng công tác thành công")
+                .Result(
+                        ctDangCtService.getAllCtDangCtByDonViVaKhoangThoiGian(idDonVi,start,end)
+                )
+                .build();
+    }
 
     @GetMapping("/search/donViCha/{idDonViCha}")
     public ApiResponse<List<CtDangCtResponse>> getAllByDonViCha(

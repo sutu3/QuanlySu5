@@ -85,6 +85,52 @@ public class CtDangCtServiceImpl implements CtDangCtService {
     }
 
     @Override
+    public List<CtDangCtResponse> getAllCtDangCtDonViConByDonVi(String idDonVi, LocalDate ngayLoc) {
+
+        DonViEntity donViEntity = donViService.getById(idDonVi);
+
+        List<CtDangCtEntity> ctDangCtEntities = new ArrayList<>();
+
+        LocalDateTime start = ngayLoc.atStartOfDay();
+        LocalDateTime end = ngayLoc.atTime(23, 59, 59);
+
+        List<DonViEntity> donviCon = donViEntity.getDonViCon();
+
+        if (!donviCon.isEmpty()) {
+            donviCon.forEach(dv -> {
+                log.warn(dv.getMaDonVi());
+                ctDangCtRepo.findByDonVi_MaDonViAndCreatedAtBetweenAndStatus(
+                        dv.getMaDonVi(),
+                        start,
+                        end,
+                        Status.Đã_Duyệt
+                ).ifPresent(ctDangCtEntities::add);
+            });
+        }
+
+        return ctDangCtEntities.stream()
+                .map(ctDangCtMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public CtDangCtResponse getAllCtDangCtByDonVi(String idDonVi, LocalDate ngayLoc) {
+        LocalDateTime start = ngayLoc.atStartOfDay();
+        LocalDateTime end = ngayLoc.atTime(23, 59, 59);
+
+        CtDangCtEntity Reports =
+                ctDangCtRepo.findByDonVi_MaDonViAndCreatedAtBetween(idDonVi, start, end)
+                        .orElseThrow(() -> new AppException(ErrorCode.CTDANGCT_NOT_FOUND));
+        return ctDangCtMapper.toResponse(Reports);    }
+
+    @Override
+    public List<CtDangCtResponse> getAllCtDangCtByDonViVaKhoangThoiGian(String idDonVi, LocalDate start, LocalDate end) {
+        List<CtDangCtEntity> ctDangCtEntity = ctDangCtRepo.findAllByDonVi_MaDonViAndCreatedAtBetween(idDonVi, start.atStartOfDay(), end.atTime(23, 59, 59));
+
+        return ctDangCtEntity.stream().map(ctDangCtMapper::toResponse).collect(Collectors.toList());
+    }
+
+    @Override
     public CtDangCtResponse getAllCtDangCtoByDonViApprove(String idDonVi, LocalDate ngayLoc) {
         LocalDateTime start = ngayLoc.atStartOfDay();
         LocalDateTime end = ngayLoc.atTime(23, 59, 59);
