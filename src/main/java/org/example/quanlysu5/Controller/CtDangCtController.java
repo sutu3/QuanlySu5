@@ -93,7 +93,7 @@ public class CtDangCtController {
                 .build();
     }
 
-    @GetMapping("/donVi/{idDonVi}")
+    @GetMapping("/search/donVi/{idDonVi}")
     public ApiResponse<CtDangCtResponse> getByIdDonVi(
             @PathVariable String idDonVi
     ) {
@@ -106,7 +106,7 @@ public class CtDangCtController {
                 .build();
     }
 
-    @GetMapping("/donViCha/{idDonViCha}")
+    @GetMapping("/search/donViCha/{idDonViCha}")
     public ApiResponse<List<CtDangCtResponse>> getAllByDonViCha(
             @PathVariable String idDonViCha
     ) {
