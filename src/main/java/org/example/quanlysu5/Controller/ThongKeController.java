@@ -2,6 +2,7 @@ package org.example.quanlysu5.Controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.quanlysu5.Dto.ApiResponse;
+import org.example.quanlysu5.Dto.Response.CtDangCt.DashboardCtDangCtResponse;
 import org.example.quanlysu5.Dto.Response.ThongKe.ThongKeResponse;
 import org.example.quanlysu5.Service.ThongKeService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -33,6 +34,21 @@ public class ThongKeController {
                 .Result(
                         thongKeService.thongKeQuanSo(ngayBaoCao)
                 )
+                .build();
+    }
+    @GetMapping("/ctDangCt")
+    public ApiResponse<DashboardCtDangCtResponse> dashboard(
+            @RequestParam
+            @DateTimeFormat(pattern = "dd/MM/yyyy")
+            LocalDate date
+    ) {
+
+
+        return ApiResponse.<DashboardCtDangCtResponse>builder()
+                .success(true)
+                .code(0)
+                .message("Thống kê dashboard thành công")
+                .Result(thongKeService.thongKeDashboard(date))
                 .build();
     }
 }

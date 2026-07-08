@@ -17,6 +17,10 @@ public interface CtDangCtRepo extends JpaRepository<CtDangCtEntity,String> {
             LocalDateTime end,
             Status status
     );
+    List<CtDangCtEntity> findByCreatedAtBetween(
+            LocalDateTime start,
+            LocalDateTime end
+    );
     Optional<CtDangCtEntity> findByDonVi_MaDonViAndCreatedAtBetween(
             String idDonVi,
             LocalDateTime start,

@@ -18,6 +18,8 @@ public interface CtDangCtMapper {
     @Mapping(target = "donVi", ignore = true)
     CtDangCtEntity toEntity(CtDangCtRequest request);
 
+    @Mapping(target = "updatedAt", ignore = false)
+
     CtDangCtResponse toResponse(CtDangCtEntity ctDangCt);
     void update(@MappingTarget CtDangCtEntity ctDangCt, CtDangCtForm update);
 }

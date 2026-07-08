@@ -4,14 +4,19 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.example.quanlysu5.Dto.Response.CtDangCt.DashboardCtDangCtResponse;
+import org.example.quanlysu5.Dto.Response.CtDangCt.ThongKeDonViCtDangCtResponse;
 import org.example.quanlysu5.Dto.Response.ThongKe.*;
+import org.example.quanlysu5.Module.CtDangCtEntity;
 import org.example.quanlysu5.Module.DonBaoCaoEntity;
+import org.example.quanlysu5.Repo.CtDangCtRepo;
 import org.example.quanlysu5.Repo.DonBaoCaoRepo;
 import org.example.quanlysu5.Service.ThongKeService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -21,6 +26,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class ThongKeServiceImpl implements ThongKeService {
+    private final CtDangCtRepo ctDangCtRepo;
 
     private final DonBaoCaoRepo donBaoCaoRepo;
 
@@ -204,6 +210,77 @@ public class ThongKeServiceImpl implements ThongKeService {
 
                 .danhSachDonVi(danhSachDonVi)
 
+                .build();
+    }
+
+    @Override
+    public DashboardCtDangCtResponse thongKeDashboard(LocalDate date) {
+
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = date.atTime(LocalTime.MAX);
+
+        List<CtDangCtEntity> list =
+                ctDangCtRepo.findByCreatedAtBetween(start, end);
+        int tongDonVi = list.size();
+
+        int donViCoKienNghi = (int) list.stream()
+                .filter(x ->
+                        x.getKienNghi() != null
+                                && !x.getKienNghi().trim().isEmpty()
+                )
+                .count();
+
+        int donViCoDotXuat = (int) list.stream()
+                .filter(x ->
+                        x.getNoiDungDotXuat() != null
+                                && !x.getNoiDungDotXuat().trim().isEmpty()
+                )
+                .count();
+
+        List<ThongKeDonViCtDangCtResponse> donViResponses =
+                list.stream()
+                        .map(x -> {
+
+                            long soKienNghi =
+                                    (x.getKienNghi() != null
+                                            && !x.getKienNghi().trim().isEmpty())
+                                            ? 1 : 0;
+                            log.warn("Kieesn Nghị: "+(x.getKienNghi() != null
+                                    && !x.getKienNghi().trim().isEmpty()));
+
+                            long soDotXuat =
+                                    (x.getNoiDungDotXuat() != null
+                                            && !x.getNoiDungDotXuat().trim().isEmpty())
+                                            ? 1 : 0;
+
+                            long tongVanDe =
+                                    soKienNghi + soDotXuat;
+
+                            String mucDo = "Tốt";
+
+                            if (tongVanDe >= 2) {
+                                mucDo = "Có vấn đề";
+                            }
+                            else if (tongVanDe == 1) {
+                                mucDo = "Cần chú ý";
+                            }
+
+                            return ThongKeDonViCtDangCtResponse.builder()
+                                    .tenDonVi(x.getDonVi().getTenDonvi())
+                                    .soKienNghi(soKienNghi)
+                                    .soDotXuat(soDotXuat)
+                                    .idDonVi(x.getDonVi().getMaDonVi())
+                                    .tongVanDe(tongVanDe)
+                                    .mucDo(mucDo)
+                                    .build();
+                        })
+                        .collect(Collectors.toList());
+
+        return DashboardCtDangCtResponse.builder()
+                .tongDonVi(tongDonVi)
+                .donViCoKienNghi(donViCoKienNghi)
+                .donViCoDotXuat(donViCoDotXuat)
+                .danhSachDonVi(donViResponses)
                 .build();
     }
 

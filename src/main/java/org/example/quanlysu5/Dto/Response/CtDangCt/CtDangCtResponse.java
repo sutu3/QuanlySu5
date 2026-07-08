@@ -10,6 +10,8 @@ import org.example.quanlysu5.Dto.Response.DonVi.DonViNoList;
 import org.example.quanlysu5.Dto.Response.DonVi.DonViResponse;
 import org.example.quanlysu5.Enum.Status;
 
+import java.time.LocalDateTime;
+
 @SuperBuilder
 @Data
 @NoArgsConstructor
@@ -33,4 +35,5 @@ public class CtDangCtResponse {
     Status status;
 
     DonViNoList donVi;
+    LocalDateTime updatedAt;
 }
