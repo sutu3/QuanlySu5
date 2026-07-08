@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
+
 @SuperBuilder
 @Data
 @NoArgsConstructor
@@ -24,4 +26,5 @@ public class ThongKeDonViCtDangCtResponse {
     long tongVanDe;
 
     String mucDo;
+    String updateAt;
 }

@@ -2,11 +2,12 @@ package org.example.quanlysu5.Service.Impl;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+
 import lombok.extern.slf4j.Slf4j;
 import org.example.quanlysu5.Dto.Response.CtDangCt.DashboardCtDangCtResponse;
 import org.example.quanlysu5.Dto.Response.CtDangCt.ThongKeDonViCtDangCtResponse;
 import org.example.quanlysu5.Dto.Response.ThongKe.*;
+import org.example.quanlysu5.Hepler.TimeUtils;
 import org.example.quanlysu5.Module.CtDangCtEntity;
 import org.example.quanlysu5.Module.DonBaoCaoEntity;
 import org.example.quanlysu5.Repo.CtDangCtRepo;
@@ -29,6 +30,7 @@ public class ThongKeServiceImpl implements ThongKeService {
     private final CtDangCtRepo ctDangCtRepo;
 
     private final DonBaoCaoRepo donBaoCaoRepo;
+    TimeUtils timeUtils;
 
     @Override
     public ThongKeResponse thongKeQuanSo(LocalDate ngayBaoCao) {
@@ -269,6 +271,7 @@ public class ThongKeServiceImpl implements ThongKeService {
                                     .tenDonVi(x.getDonVi().getTenDonvi())
                                     .soKienNghi(soKienNghi)
                                     .soDotXuat(soDotXuat)
+                                    .updateAt(TimeUtils.toRelative(x.getUpdatedAt()))
                                     .idDonVi(x.getDonVi().getMaDonVi())
                                     .tongVanDe(tongVanDe)
                                     .mucDo(mucDo)
