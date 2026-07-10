@@ -16,4 +16,14 @@ public interface TaiKhoanService {
     List<TaiKhoanResponse> getAllTaiKhoan();
 
     TaiKhoanResponse createdTaiKhoanResponse(TaiKhoanRequest taiKhoanRequest);
+
+    TaiKhoanResponse updateTaiKhoan(String idTaiKhoan, TaiKhoanRequest request);
+
+    void deleteTaiKhoan(String idTaiKhoan);
+
+    void resetMatKhau(String idTaiKhoan, String matKhauMoi);
+
+    TaiKhoanResponse lockTaiKhoan(String id);
+
+    TaiKhoanResponse unlockTaiKhoan(String id);
 }

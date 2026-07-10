@@ -22,6 +22,7 @@ public enum ErrorCode {
     CAPBAC_IS_EXIST(1003,"thông tin cấp bậc bị trùng", HttpStatus.CONFLICT),
     ROLE_NOT_FOUND(1002,"Role Not Found", HttpStatus.NOT_FOUND),
     ROLE_IS_EXIST(1003,"Role Exist", HttpStatus.CONFLICT),
+    ROLE_IN_USE(1003, "Không thể xóa vai trò vì vai trò này đang được gán cho một hoặc nhiều tài khoản.", HttpStatus.CONFLICT),
     CTDANGCT_NOT_FOUND(1002,"Thông tin đơn công tác đảng, chính trị", HttpStatus.NOT_FOUND),
     CATRUC_TACCHIEN_EXIST(1002,"Ca trực ban Tác chiến đã tồn tại", HttpStatus.NOT_FOUND),
     CATRUC_CHIHUY_EXIST(1003,"Ca trực chỉ huy đã tồn tại", HttpStatus.CONFLICT),
@@ -37,7 +38,9 @@ public enum ErrorCode {
     TRUCBANTACCHIEN_IS_EXIST(1003,"Trùng thông tin người trực khác", HttpStatus.CONFLICT),
     TRUCCHIHUY_NOT_FOUND(1002,"Không tìm thấy thông tin người trực ban chỉ huy", HttpStatus.NOT_FOUND),
     TRUCCHIHUY_IS_EXIST(1003,"Trùng thông tin người trực khác", HttpStatus.CONFLICT),
+    NHATKY_NOT_FOUND(1002,"Không tìm thấy thông tin nhật ký hệ thống", HttpStatus.NOT_FOUND),
     PASSWORD_INVALID(1003,"Mật khẩu không hợp lệ", HttpStatus.CONFLICT),
+    ACCOUNT_LOCKED(1005,"Tài khoản đã bị khóa",HttpStatus.FORBIDDEN),
     UNAUTHENTICATED(1004,"Tên đăng nhập hoặc mật khẩu không đúng",HttpStatus.UNAUTHORIZED),
     UNCATEGORIZED(9999,"Uncategorized", HttpStatus.INTERNAL_SERVER_ERROR);
     ErrorCode(int Code,String Message, HttpStatusCode sponse){

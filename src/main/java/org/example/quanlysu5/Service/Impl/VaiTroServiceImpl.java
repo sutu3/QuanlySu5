@@ -8,8 +8,10 @@ import org.example.quanlysu5.Dto.Request.VaiTroRequest;
 import org.example.quanlysu5.Dto.Response.VaiTroResponse;
 import org.example.quanlysu5.Exception.AppException;
 import org.example.quanlysu5.Exception.ErrorCode;
+import org.example.quanlysu5.Form.VaiTroForm;
 import org.example.quanlysu5.Mapper.VaiTroMapper;
 import org.example.quanlysu5.Module.VaiTroEntity;
+import org.example.quanlysu5.Repo.TaiKhoanRepo;
 import org.example.quanlysu5.Repo.VaiTroRepo;
 import org.example.quanlysu5.Service.VaiTroService;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class VaiTroServiceImpl implements VaiTroService {
+    private final TaiKhoanRepo taiKhoanRepo;
     VaiTroRepo vaiTroRepo;
     VaiTroMapper vaiTroMapper;
 
@@ -60,5 +63,22 @@ public class VaiTroServiceImpl implements VaiTroService {
             throw new AppException(ErrorCode.ROLE_IS_EXIST);
         }
         return vaiTroMapper.toResponse(vaiTroRepo.save(vaiTroEntity));
+    }
+
+    @Override
+    public VaiTroResponse updateRole(VaiTroForm update, String idRole) {
+        VaiTroEntity vaitro=getRoleById(idRole);
+        vaiTroMapper.update(vaitro,update);
+        vaitro.setUpdatedAt(LocalDateTime.now());
+        return vaiTroMapper.toResponse(vaiTroRepo.save(vaitro));
+    }
+
+    @Override
+    public void deletedRole(String idRole) {
+        VaiTroEntity vaitro=getRoleById(idRole);
+        if (taiKhoanRepo.existsByVaiTro_IdVaiTro(vaitro.getIdVaiTro())) {
+            throw new AppException(ErrorCode.ROLE_IN_USE);
+        }
+        vaiTroRepo.deleteById(vaitro.getIdVaiTro());
     }
 }

@@ -37,6 +37,7 @@ public class TaikhoanEntity extends BaseEntity{
     @JoinColumn(name = "maDonVi",nullable = false)
     DonViEntity donVi;
 
-
+    @Column(columnDefinition = "BOOL COMMENT 'trạng thái khóa tài khoản'", nullable = false)
+    Boolean khoa = false;
 
 }

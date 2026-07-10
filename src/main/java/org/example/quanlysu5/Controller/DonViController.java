@@ -60,7 +60,7 @@ public class DonViController {
                 .code(0)
                 .build();
     }
-    @PutMapping("/update/{id}")
+    @PutMapping("/update/{id:.+}")
     public ApiResponse<DonViResponse> updateDonVi(@PathVariable String id,
             @RequestBody DonviForm update) {
 

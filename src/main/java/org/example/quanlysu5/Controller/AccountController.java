@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.example.quanlysu5.Dto.ApiResponse;
+import org.example.quanlysu5.Dto.Request.ResetPasswordRequest;
 import org.example.quanlysu5.Dto.Request.TaiKhoanRequest;
 import org.example.quanlysu5.Dto.Response.TaiKhoan.TaiKhoanResponse;
 import org.example.quanlysu5.Service.TaiKhoanService;
@@ -54,6 +55,59 @@ public class AccountController {
                 .Result(taiKhoanService.getAllTaiKhoan())
                 .message("Successfully")
                 .success(true)
+                .build();
+    }
+    @PutMapping("/{id}")
+    public ApiResponse<TaiKhoanResponse> updateTaiKhoan(
+            @PathVariable String id,
+            @RequestBody TaiKhoanRequest request) {
+        return ApiResponse.<TaiKhoanResponse>builder()
+                .code(0)
+                .Result(taiKhoanService.updateTaiKhoan(id, request))
+                .message("Successfully")
+                .success(true)
+                .build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<Void> deleteTaiKhoan(@PathVariable String id) {
+        taiKhoanService.deleteTaiKhoan(id);
+        return ApiResponse.<Void>builder()
+                .code(0)
+                .message("Successfully")
+                .success(true)
+                .build();
+    }
+
+    @PutMapping("/{id}/reset-password")
+    public ApiResponse<Void> resetMatKhau(
+            @PathVariable String id,
+            @RequestBody ResetPasswordRequest request) {
+        taiKhoanService.resetMatKhau(id, request.getMatKhauMoi());
+        return ApiResponse.<Void>builder()
+                .code(0)
+                .message("Successfully")
+                .success(true)
+                .build();
+    }
+
+    @PutMapping("/{id}/lock")
+    public ApiResponse<TaiKhoanResponse> lock(@PathVariable String id) {
+        return ApiResponse.<TaiKhoanResponse>builder()
+                .success(true)
+                .code(1000)
+                .message("Khóa tài khoản thành công")
+                .Result(taiKhoanService.lockTaiKhoan(id))
+                .build();
+    }
+
+    @PutMapping("/{id}/unlock")
+    public ApiResponse<TaiKhoanResponse> unlock(@PathVariable String id) {
+        return ApiResponse.<TaiKhoanResponse>builder()
+                .success(true)
+                .code(1000)
+                .message("Mở khóa tài khoản thành công")
+                .Result(taiKhoanService.unlockTaiKhoan(id))
                 .build();
     }
 }

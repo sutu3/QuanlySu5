@@ -19,4 +19,5 @@ public class TaiKhoanResponse extends BaseEntity {
     String matKhau;
     DonViNoList donVi;
     VaiTroResponse vaiTro;
+    Boolean khoa;
 }

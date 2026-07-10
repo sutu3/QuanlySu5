@@ -7,13 +7,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.quanlysu5.Config.MyWebSocketHandler;
 import org.example.quanlysu5.Dto.Request.CtDangCtRequest;
 import org.example.quanlysu5.Dto.Request.GhiChuRequest;
+import org.example.quanlysu5.Dto.Request.NhatKyRequest;
 import org.example.quanlysu5.Dto.Request.ThongBaoRequest;
 import org.example.quanlysu5.Dto.Response.CtDangCt.CtDangCtResponse;
-import org.example.quanlysu5.Enum.CapDonVi;
-import org.example.quanlysu5.Enum.Status;
+import org.example.quanlysu5.Enum.*;
 import org.example.quanlysu5.Exception.AppException;
 import org.example.quanlysu5.Exception.ErrorCode;
 import org.example.quanlysu5.Form.CtDangCtForm;
+import org.example.quanlysu5.Hepler.SecurityUtils;
 import org.example.quanlysu5.Mapper.CtDangCtMapper;
 import org.example.quanlysu5.Module.CtDangCtEntity;
 import org.example.quanlysu5.Module.DonBaoCaoEntity;
@@ -21,6 +22,7 @@ import org.example.quanlysu5.Module.DonViEntity;
 import org.example.quanlysu5.Repo.CtDangCtRepo;
 import org.example.quanlysu5.Service.CtDangCtService;
 import org.example.quanlysu5.Service.DonViService;
+import org.example.quanlysu5.Service.NhatKyService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -37,6 +39,7 @@ public class CtDangCtServiceImpl implements CtDangCtService {
     CtDangCtMapper ctDangCtMapper;
     CtDangCtRepo ctDangCtRepo;
     DonViService donViService;
+    NhatKyService nhatKyService;
     MyWebSocketHandler myWebSocketHandler;
     @Override
     public List<CtDangCtResponse> getAllByDonViCha(String idDonViCha) {
@@ -72,6 +75,14 @@ public class CtDangCtServiceImpl implements CtDangCtService {
         ctDangCtEntity.setStatus(Status.Nháp);
         ctDangCtEntity.setIsDeleted(false);
         ctDangCtRepo.save(ctDangCtEntity);
+        nhatKyService.createNhatKy(NhatKyRequest.builder()
+                .doiTuong(DoiTuongNhatKy.CT_DANG_CT)
+                .hanhDong(HanhDongNhatKy.CREATE)
+                .doiTuongId(ctDangCtEntity.getIdCongtac())
+                .taiKhoan(SecurityUtils.getClaim("sub"))
+                .trangThai(TrangThaiNhatKy.THANH_CONG)
+                .moTa("Tài khoản " + SecurityUtils.getUsername() + "tạo thông tin công tác đảng, chính trị mới")
+                .build());
         return ctDangCtMapper.toResponse(ctDangCtEntity);
     }
 
@@ -81,6 +92,14 @@ public class CtDangCtServiceImpl implements CtDangCtService {
         ctDangCtMapper.update(ctDangCtEntity,update);
         ctDangCtEntity.setStatus(Status.Nháp);
         ctDangCtRepo.save(ctDangCtEntity);
+        nhatKyService.createNhatKy(NhatKyRequest.builder()
+                .doiTuong(DoiTuongNhatKy.CT_DANG_CT)
+                .hanhDong(HanhDongNhatKy.UPDATE)
+                .doiTuongId(ctDangCtEntity.getIdCongtac())
+                .taiKhoan(SecurityUtils.getClaim("sub"))
+                .trangThai(TrangThaiNhatKy.THANH_CONG)
+                .moTa("Tài khoản " + SecurityUtils.getUsername() + "cập nhập trạng thái công tác đảng, chính trị thành"+Status.Nháp.toString())
+                .build());
         return ctDangCtMapper.toResponse(ctDangCtEntity);
     }
 
@@ -158,6 +177,14 @@ public class CtDangCtServiceImpl implements CtDangCtService {
         ctDangCtEntity.setStatus(Status.Đã_Duyệt);
         ctDangCtEntity.setUpdatedAt(LocalDateTime.now());
         ctDangCtRepo.save(ctDangCtEntity);
+        nhatKyService.createNhatKy(NhatKyRequest.builder()
+                .doiTuong(DoiTuongNhatKy.CT_DANG_CT)
+                .hanhDong(HanhDongNhatKy.APPROVE)
+                .doiTuongId(ctDangCtEntity.getIdCongtac())
+                .taiKhoan(SecurityUtils.getClaim("sub"))
+                .trangThai(TrangThaiNhatKy.THANH_CONG)
+                .moTa("Tài khoản " + SecurityUtils.getUsername() + "cập nhập trạng thái công tác đảng, chính trị thành"+Status.Đã_Duyệt.toString())
+                .build());
         String jsonMessageDonVi = String.format(
                 "{\"title\":\"Đã duyệt báo cáo\",\"message\":\"Báo cáo Công tác Đảng, Chính trị của đơn vị %s đã được phê duyệt và hoàn tất xử lý\",\"type\":\"SUCCESS\"}",
                 ctDangCtEntity.getDonVi().getTenDonvi()
@@ -184,8 +211,24 @@ public class CtDangCtServiceImpl implements CtDangCtService {
         if ((ctDangCtEntity.getDonVi().getCapDonVi().equals(CapDonVi.TIEU_DOAN) && !ctDangCtEntity.getDonVi().getKyhieuDonvi().matches("dbộ"))
                 || (ctDangCtEntity.getDonVi().getCapDonVi().equals(CapDonVi.TRUNG_DOAN) && !ctDangCtEntity.getDonVi().getKyhieuDonvi().matches("ebộ"))) {
             ctDangCtEntity.setStatus(Status.Chờ_Duyệt);
+            nhatKyService.createNhatKy(NhatKyRequest.builder()
+                    .doiTuong(DoiTuongNhatKy.CT_DANG_CT)
+                    .hanhDong(HanhDongNhatKy.UPDATE)
+                    .doiTuongId(ctDangCtEntity.getIdCongtac())
+                    .taiKhoan(SecurityUtils.getClaim("sub"))
+                    .trangThai(TrangThaiNhatKy.THANH_CONG)
+                    .moTa("Tài khoản " + SecurityUtils.getUsername() + "cập nhập trạng thái công tác đảng, chính trị thành"+Status.Chờ_Duyệt.toString())
+                    .build());
         } else {
             ctDangCtEntity.setStatus(Status.Đã_Duyệt);
+            nhatKyService.createNhatKy(NhatKyRequest.builder()
+                    .doiTuong(DoiTuongNhatKy.CT_DANG_CT)
+                    .hanhDong(HanhDongNhatKy.APPROVE)
+                    .doiTuongId(ctDangCtEntity.getIdCongtac())
+                    .taiKhoan(SecurityUtils.getClaim("sub"))
+                    .trangThai(TrangThaiNhatKy.THANH_CONG)
+                    .moTa("Tài khoản " + SecurityUtils.getUsername() + "cập nhập trạng thái công tác đảng, chính trị thành"+Status.Đã_Duyệt.toString())
+                    .build());
         }
         ctDangCtEntity.setUpdatedAt(LocalDateTime.now());
         ctDangCtRepo.save(ctDangCtEntity);
@@ -208,6 +251,14 @@ public class CtDangCtServiceImpl implements CtDangCtService {
         CtDangCtEntity ctDangCtEntity = getById(id);
         ctDangCtEntity.setStatus(Status.Nháp);
         ctDangCtEntity.setUpdatedAt(LocalDateTime.now());
+        nhatKyService.createNhatKy(NhatKyRequest.builder()
+                .doiTuong(DoiTuongNhatKy.CT_DANG_CT)
+                .hanhDong(HanhDongNhatKy.UPDATE)
+                .doiTuongId(ctDangCtEntity.getIdCongtac())
+                .taiKhoan(SecurityUtils.getClaim("sub"))
+                .trangThai(TrangThaiNhatKy.THANH_CONG)
+                .moTa("Tài khoản " + SecurityUtils.getUsername() + "cập nhập trạng thái công tác đảng, chính trị thành"+Status.Nháp.toString())
+                .build());
         ctDangCtRepo.save(ctDangCtEntity);
         String jsonMessage = String.format(
                 "{\"title\":\"Báo cáo Công tác Đảng, Chính trị đã bị thu hồi\",\"message\":\"Báo cáo của đơn vị %s đã được thu hồi và không còn chờ phê duyệt\",\"type\":\"WARNING\"}",
@@ -234,6 +285,14 @@ public class CtDangCtServiceImpl implements CtDangCtService {
         ctDangCtEntity.setGhiChu(ghichu.getGhiChu());
         ctDangCtEntity.setStatus(Status.Từ_Chối);
         ctDangCtEntity.setUpdatedAt(LocalDateTime.now());
+        nhatKyService.createNhatKy(NhatKyRequest.builder()
+                .doiTuong(DoiTuongNhatKy.CT_DANG_CT)
+                .hanhDong(HanhDongNhatKy.REJECT)
+                .doiTuongId(ctDangCtEntity.getIdCongtac())
+                .taiKhoan(SecurityUtils.getClaim("sub"))
+                .trangThai(TrangThaiNhatKy.THANH_CONG)
+                .moTa("Tài khoản " + SecurityUtils.getUsername() + "cập nhập trạng thái công tác đảng, chính trị thành"+Status.Từ_Chối.toString())
+                .build());
         String jsonMessage = String.format(
                 "{\"title\":\"Báo cáo bị từ chối\",\"message\":\"Báo cáo của đơn vị %s đã bị từ chối. Vui lòng kiểm tra ghi chú và chỉnh sửa.\",\"type\":\"WARNING\"}",
                 ctDangCtEntity.getDonVi().getTenDonvi()

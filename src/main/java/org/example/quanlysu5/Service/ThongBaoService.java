@@ -21,5 +21,7 @@ public interface ThongBaoService {
 
     void thongBaoDaDoc(String idMucTieu);
 
+    void thongBaoWebsocket(String message,ThongBaoRequest request,String idMuctieu);
+
 
 }

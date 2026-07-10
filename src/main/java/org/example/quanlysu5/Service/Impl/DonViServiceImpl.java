@@ -1,9 +1,20 @@
 package org.example.quanlysu5.Service.Impl;
 
 
+import org.example.quanlysu5.Dto.Request.NhatKyRequest;
 import org.example.quanlysu5.Enum.CapDonVi;
+import org.example.quanlysu5.Enum.DoiTuongNhatKy;
+import org.example.quanlysu5.Enum.HanhDongNhatKy;
+import org.example.quanlysu5.Enum.TrangThaiNhatKy;
 import org.example.quanlysu5.Form.DonviForm;
+import org.example.quanlysu5.Hepler.SecurityUtils;
 import org.example.quanlysu5.Mapper.DonViMapper;
+import org.example.quanlysu5.Module.NhatKyEntity;
+import org.example.quanlysu5.Module.TaikhoanEntity;
+import org.example.quanlysu5.Repo.TaiKhoanRepo;
+import org.example.quanlysu5.Service.Impl.Specification.DonViSpecification;
+import org.example.quanlysu5.Service.NhatKyService;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +41,12 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class DonViServiceImpl implements DonViService {
+    private final TaiKhoanRepo taiKhoanRepo;
 
     ChildCode childCode;
     DonViRepo DonViRepo;
     DonViMapper donViMapper;
+    NhatKyService nhatKyService;
     @Override
     public Page<DonViResponse> toUnitsPage(Pageable page) {
         return DonViRepo.findAllByIsDeleted(false,page)
@@ -42,7 +55,10 @@ public class DonViServiceImpl implements DonViService {
 
     @Override
     public List<DonViResponse> toUnitsList() {
-        return  DonViRepo.findAll().stream()
+        TaikhoanEntity taikhoan=taiKhoanRepo.findById(SecurityUtils.getClaim("sub"))
+                .orElseThrow(()->new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        Specification<DonViEntity> specification = Specification.where(DonViSpecification.sortTheoCap()) ;
+        return  DonViRepo.findAll(specification).stream()
                 .map(donViMapper::toResponse).collect(Collectors.toList());
     }
 
@@ -52,22 +68,28 @@ public class DonViServiceImpl implements DonViService {
 
         DonViEntity donVi = donViMapper.toEntity(request);
         donVi.setCapDonVi(CapDonVi.valueOf(request.getCapDonVi()));
-        // Nếu có đơn vị cha
         if (request.getDonViCha() != null) {
 
             DonViEntity donViCha = DonViRepo.findById(request.getDonViCha())
                     .orElseThrow(() ->
-                            new AppException(ErrorCode.DONVI_NOT_FOUND));
+                    {
+                        nhatKyService.createNhatKy(NhatKyRequest.builder()
+                                .doiTuong(DoiTuongNhatKy.DON_VI)
+                                .hanhDong(HanhDongNhatKy.CREATE)
+                                .taiKhoan(SecurityUtils.getClaim("sub"))
+                                .trangThai(TrangThaiNhatKy.THAT_BAI)
+                                .moTa("Tài khoản " + SecurityUtils.getUsername() + "không tạo thông tin đơn vị mới do "+ErrorCode.DONVI_NOT_FOUND)
+                                .build());
+                        return new AppException(ErrorCode.DONVI_NOT_FOUND);
+                    });
 
             donVi.setDonViCha(donViCha);
 
-            // Sinh mã đơn vị
             String maDonVi = childCode.generateChildCode(donViCha);
             donVi.setMaDonVi(maDonVi);
 
         } else {
 
-            // Đơn vị gốc (sư đoàn)
             String maDonVi = childCode.generateRootCode();
             donVi.setMaDonVi(maDonVi);
         }
@@ -76,7 +98,14 @@ public class DonViServiceImpl implements DonViService {
         donVi.setIsDeleted(false);
 
         DonViEntity saved = DonViRepo.save(donVi);
-
+        nhatKyService.createNhatKy(NhatKyRequest.builder()
+                .doiTuong(DoiTuongNhatKy.DON_VI)
+                .hanhDong(HanhDongNhatKy.CREATE)
+                .doiTuongId(saved.getMaDonVi())
+                .taiKhoan(SecurityUtils.getClaim("sub"))
+                .trangThai(TrangThaiNhatKy.THANH_CONG)
+                .moTa("Tài khoản " + SecurityUtils.getUsername() + "tạo thông tin đơn vị mới "+donVi.getTenDonvi())
+                .build());
         return donViMapper.toResponse(saved);
     }
 
@@ -86,6 +115,14 @@ public class DonViServiceImpl implements DonViService {
         donViMapper.update(donVi,update);
         donVi.setUpdatedAt(LocalDateTime.now());
         DonViRepo.save(donVi);
+        nhatKyService.createNhatKy(NhatKyRequest.builder()
+                .doiTuong(DoiTuongNhatKy.DON_VI)
+                .hanhDong(HanhDongNhatKy.CREATE)
+                .doiTuongId(idDonVi)
+                .taiKhoan(SecurityUtils.getClaim("sub"))
+                .trangThai(TrangThaiNhatKy.THANH_CONG)
+                .moTa("Tài khoản " + SecurityUtils.getUsername() + "tạo thông tin đơn vị mới "+donVi.getTenDonvi())
+                .build());
         return donViMapper.toResponse(donVi);
     }
 

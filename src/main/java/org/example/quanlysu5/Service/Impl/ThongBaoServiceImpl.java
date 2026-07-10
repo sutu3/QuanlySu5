@@ -5,15 +5,17 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.example.quanlysu5.Config.MyWebSocketHandler;
 import org.example.quanlysu5.Dto.Request.ThongBaoRequest;
 import org.example.quanlysu5.Dto.Response.ThongBaoResponse;
 import org.example.quanlysu5.Enum.LoaiMuctieu;
 import org.example.quanlysu5.Mapper.ThongBaoMapper;
 import org.example.quanlysu5.Module.ThongBaoEntity;
+import org.example.quanlysu5.Repo.TaiKhoanRepo;
 import org.example.quanlysu5.Repo.ThongBaoRepo;
 import org.example.quanlysu5.Service.DonViService;
-import org.example.quanlysu5.Service.TaiKhoanService;
 import org.example.quanlysu5.Service.ThongBaoService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -29,7 +31,7 @@ public class ThongBaoServiceImpl implements ThongBaoService {
     private final ThongBaoRepo thongBaoRepo;
     ThongBaoMapper thongBaoMapper;
     DonViService donViService;
-    TaiKhoanService taiKhoanService;
+    TaiKhoanRepo taiKhoanRepo;
 
     @Override
     public List<ThongBaoResponse> getAllThongBao(String idMucTieu) {
@@ -57,7 +59,7 @@ public class ThongBaoServiceImpl implements ThongBaoService {
     @Override
     public ThongBaoResponse createThongBaoTaiKhoan(ThongBaoRequest request) {
         ThongBaoEntity thongBaoEntity = thongBaoMapper.toEntity(request);
-        taiKhoanService.getTaiKhoanById(request.getIdMuctieu());
+        taiKhoanRepo.findByIdTaiKhoanAndIsDeletedFalse(request.getIdMuctieu());
         thongBaoEntity.setLoaiMuctieu(LoaiMuctieu.USER);
         thongBaoEntity.setCreatedAt(LocalDateTime.now());
         thongBaoEntity.setDaDoc(false);
@@ -81,5 +83,10 @@ public class ThongBaoServiceImpl implements ThongBaoService {
     public void thongBaoDaDoc(String idMucTieu) {
         log.warn("idMuctieu "+idMucTieu);
         thongBaoRepo.deleteAllByIdMuctieu(idMucTieu);
+    }
+
+    @Override
+    @Lazy
+    public void thongBaoWebsocket(String message, ThongBaoRequest thongBaoRequest,String idMuctieu) {
     }
 }

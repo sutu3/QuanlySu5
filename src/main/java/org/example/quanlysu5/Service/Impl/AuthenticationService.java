@@ -13,12 +13,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.quanlysu5.Dto.Request.*;
 import org.example.quanlysu5.Dto.Response.AuthenticationResponse;
 import org.example.quanlysu5.Dto.Response.IntrospectResponse;
+import org.example.quanlysu5.Enum.DoiTuongNhatKy;
+import org.example.quanlysu5.Enum.HanhDongNhatKy;
+import org.example.quanlysu5.Enum.TrangThaiNhatKy;
 import org.example.quanlysu5.Exception.AppException;
 import org.example.quanlysu5.Exception.ErrorCode;
+import org.example.quanlysu5.Hepler.SecurityUtils;
 import org.example.quanlysu5.Module.TaikhoanEntity;
 import org.example.quanlysu5.Module.InvalidateTokenEntity;
 import org.example.quanlysu5.Repo.TaiKhoanRepo;
 import org.example.quanlysu5.Repo.InvalidateTokenRepo;
+import org.example.quanlysu5.Service.NhatKyService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,6 +46,7 @@ import java.util.UUID;
 public class AuthenticationService {
     TaiKhoanRepo taiKhoanRepo;
     InvalidateTokenRepo invalidateTokenRepo;
+    NhatKyService nhatKyService;
 
     @NonFinal
     @Value("aGUDzL2OOlvQcHJE5fpfzxv0w6MUZtFhF4IRZo+Tc/z5FnKjn8xxJvoot4OVj6LP")
@@ -76,7 +82,19 @@ public class AuthenticationService {
 
         if (!authenticated) throw new AppException(ErrorCode.UNAUTHENTICATED);
 
-        var token = generateToken(account,VALID_DURATION);
+        if (Boolean.TRUE.equals(account.getKhoa())) {
+            throw new AppException(ErrorCode.ACCOUNT_LOCKED);
+        }
+
+        var token = generateToken(account, VALID_DURATION);
+        nhatKyService.createNhatKy(NhatKyRequest.builder()
+                .doiTuong(DoiTuongNhatKy.TAI_KHOAN)
+                .hanhDong(HanhDongNhatKy.LOGIN)
+                .taiKhoan(account.getIdTaiKhoan())
+                .trangThai(TrangThaiNhatKy.THANH_CONG)
+                .moTa("Tài khoản " + account.getTenTaiKhoan() + " đăng nhập hệ thống")
+                .build());
+        log.info(account.toString());
 
         return AuthenticationResponse.builder().token(token).build();
     }
@@ -92,6 +110,13 @@ public class AuthenticationService {
                     InvalidateTokenEntity.builder().id(jit).expiryTime(expiryTime).build();
 
             invalidateTokenRepo.save(invalidatedToken);
+            nhatKyService.createNhatKy(NhatKyRequest.builder()
+                    .doiTuong(DoiTuongNhatKy.TAI_KHOAN)
+                    .hanhDong(HanhDongNhatKy.LOGOUT)
+                    .taiKhoan(SecurityUtils.getClaim("sub"))
+                    .trangThai(TrangThaiNhatKy.THANH_CONG)
+                    .moTa("Tài khoản " + SecurityUtils.getUsername() + " Đăng xuất hệ thống")
+                    .build());
         } catch (AppException exception){
             log.info("Token already expired");
         }
@@ -174,7 +199,7 @@ public class AuthenticationService {
         }
         return false;
     }
-//    public AuthenticationResponse forgotPassword(String email) {
+    //    public AuthenticationResponse forgotPassword(String email) {
 //        User user=userRepo.findByEmailWithRoles(email)
 //                .orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUND));
 //        NotificationForgotPassword notification = NotificationForgotPassword.builder()
@@ -218,13 +243,27 @@ public class AuthenticationService {
         Jwt jwt = (Jwt) authentication.getPrincipal();
 
         String scope = jwt.getClaim("sub");
+
         TaikhoanEntity user = taiKhoanRepo.findById(scope)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
-
+        nhatKyService.createNhatKy(NhatKyRequest.builder()
+                .doiTuong(DoiTuongNhatKy.TAI_KHOAN)
+                .hanhDong(HanhDongNhatKy.UPDATE)
+                .taiKhoan(SecurityUtils.getClaim("sub"))
+                .trangThai(TrangThaiNhatKy.THANH_CONG)
+                .moTa("Tài khoản " + SecurityUtils.getUsername() + " Đổi mật khẩu của tài khoản "+user.getTenTaiKhoan())
+                .build());
         if(passwordEncoder.matches(
                 request.getMatKhau(),
                 user.getMatKhau()
         )||passwordEncoder.matches(request.getMatKhauCu(),user.getMatKhau())) {
+            nhatKyService.createNhatKy(NhatKyRequest.builder()
+                    .doiTuong(DoiTuongNhatKy.TAI_KHOAN)
+                    .hanhDong(HanhDongNhatKy.UPDATE)
+                    .taiKhoan(SecurityUtils.getClaim("sub"))
+                    .trangThai(TrangThaiNhatKy.THAT_BAI)
+                    .moTa("Tài khoản " + SecurityUtils.getUsername() + " Đổi mật khẩu không thành công do "+ErrorCode.PASSWORD_INVALID.getMessage())
+                    .build());
             throw new AppException(ErrorCode.PASSWORD_INVALID);
         }
 

@@ -4,6 +4,8 @@ import org.example.quanlysu5.Enum.Status;
 import org.example.quanlysu5.Module.CtDangCtEntity;
 import org.example.quanlysu5.Module.DonBaoCaoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +22,20 @@ public interface CtDangCtRepo extends JpaRepository<CtDangCtEntity,String> {
     List<CtDangCtEntity> findByCreatedAtBetween(
             LocalDateTime start,
             LocalDateTime end
+    );
+    @Query(value = """
+    SELECT ctdang.*
+    FROM ct_dang_ct_entity ctdang
+    JOIN don_vi_entity dv
+        ON ctdang.ma_don_vi = dv.ma_don_vi
+    WHERE dv.ma_don_vi REGEXP CONCAT('^', :maDonViCha, '\\\\.[0-9]{3}$')
+      AND ctdang.created_at BETWEEN :start AND :end
+      AND ctdang.status = 'Đã_Duyệt'
+""", nativeQuery = true)
+    List<CtDangCtEntity> findAllCap2ByThoiGian(
+            @Param("maDonViCha") String maDonViCha,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
     );
     Optional<CtDangCtEntity> findByDonVi_MaDonViAndCreatedAtBetween(
             String idDonVi,

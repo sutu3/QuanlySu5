@@ -159,35 +159,35 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
         List<WebSocketSession> oldSessions =
                 userSessions.get(userId);
 
-//        if (oldSessions != null) {
-//
-//            for (WebSocketSession old : oldSessions) {
-//
-//                if (
-//                        old.isOpen()
-//                                && !old.getId().equals(session.getId())
-//                ) {
-//
-//                    log.warn(
-//                            "FORCE_LOGOUT oldSession={} newSession={}",
-//                            old.getId(),
-//                            session.getId()
-//                    );
-//
-//                    old.sendMessage(
-//                            new TextMessage(
-//                                    "{\"type\":\"FORCE_LOGOUT\"}"
-//                            )
-//                    );
-//
-//                    old.close();
-//                }
-//            }
-//
-//            oldSessions.removeIf(
-//                    s -> !s.isOpen()
-//            );
-//        }
+        if (oldSessions != null) {
+
+            for (WebSocketSession old : oldSessions) {
+
+                if (
+                        old.isOpen()
+                                && !old.getId().equals(session.getId())
+                ) {
+
+                    log.warn(
+                            "FORCE_LOGOUT oldSession={} newSession={}",
+                            old.getId(),
+                            session.getId()
+                    );
+
+                    old.sendMessage(
+                            new TextMessage(
+                                    "{\"type\":\"FORCE_LOGOUT\"}"
+                            )
+                    );
+
+                    old.close();
+                }
+            }
+
+            oldSessions.removeIf(
+                    s -> !s.isOpen()
+            );
+        }
 
 
         addUniqueSession(userSessions, userId, session);

@@ -27,17 +27,21 @@ import org.example.quanlysu5.Data.TrungDoan5.TieuDoan5E5Data;
 import org.example.quanlysu5.Data.TrungDoan5.TieuDoan6E5Data;
 import org.example.quanlysu5.Data.TrungDoan5.TrungDoan5Data;
 import org.example.quanlysu5.Data.TrungDoanTrucThuocSuData;
+import org.example.quanlysu5.Dto.Request.KhungGioBaoCaoRequest;
 import org.example.quanlysu5.Enum.CapDonVi;
+import org.example.quanlysu5.Enum.LoaiBaoBan;
 import org.example.quanlysu5.Exception.AppException;
 import org.example.quanlysu5.Exception.ErrorCode;
 import org.example.quanlysu5.Hepler.DataInitializer;
 import org.example.quanlysu5.Module.DonViEntity;
+import org.example.quanlysu5.Module.KhungGioBaoCaoEntity;
 import org.example.quanlysu5.Module.TaikhoanEntity;
 import org.example.quanlysu5.Module.VaiTroEntity;
 import org.example.quanlysu5.Repo.DonViRepo;
 import org.example.quanlysu5.Repo.TaiKhoanRepo;
 import org.example.quanlysu5.Repo.VaiTroRepo;
 import org.example.quanlysu5.Service.DonViService;
+import org.example.quanlysu5.Service.KhungGioBaoCaoService;
 import org.example.quanlysu5.Service.VaiTroService;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
@@ -45,6 +49,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -57,8 +62,9 @@ public class ApplicationInitConfig {
 
     @Bean
     ApplicationRunner applicationRunner(TaiKhoanRepo taiKhoanRepository, VaiTroRepo vaiTroRepository, TaiKhoanRepo taiKhoanRepo,
-                                        DonViRepo donViRepo, DonViService donViService, VaiTroService vaiTroService, DataInitializer dataInitializer) {
+                                        DonViRepo donViRepo, DonViService donViService, KhungGioBaoCaoService khungGioBaoCaoService, VaiTroService vaiTroService, DataInitializer dataInitializer) {
         return args -> {
+
             // Initial data setup
             if (taiKhoanRepository.findByTenDangNhapIgnoreCase("admin").isEmpty()) {
 
@@ -77,6 +83,19 @@ public class ApplicationInitConfig {
 
                                     return vaiTroRepository.save(role);
                                 });
+                KhungGioBaoCaoRequest khungGioBaoCaoTrucChiHuy= KhungGioBaoCaoRequest.builder()
+                        .khunggioBatdau(LocalTime.parse("00:00:00"))
+                        .khunggioKetthuc(LocalTime.parse("00:00:00"))
+                        .soNgayTruc(1)
+                        .build();
+                KhungGioBaoCaoRequest khungGioBaoCaoTrucBanTacChien=KhungGioBaoCaoRequest.builder()
+                        .khunggioBatdau(LocalTime.parse("00:00:00"))
+                        .khunggioKetthuc(LocalTime.parse("00:00:00"))
+                        .soNgayTruc(1)
+                        .build();
+                khungGioBaoCaoService.createKhungGioBanChiHuy(khungGioBaoCaoTrucChiHuy);
+                khungGioBaoCaoService.createKhungGioBanTacChien(khungGioBaoCaoTrucBanTacChien);
+
 
                 TaikhoanEntity user = TaikhoanEntity.builder()
                         .tenTaiKhoan("admin")
@@ -116,11 +135,7 @@ public class ApplicationInitConfig {
                                 Su5.getMaDonVi()
                         )
                 );
-                dataInitializer.saveAll(
-                        PhongBanTrucThuocSuData.getData(
-                                Su5.getMaDonVi()
-                        )
-                );
+
                 DonViEntity trungdoan4=donViRepo.findByKyhieuDonvi("e4")
                         .orElseThrow(()->new AppException(ErrorCode.DONVI_NOT_FOUND));
                 dataInitializer.saveAll(TrungDoan4Data.getData(trungdoan4.getMaDonVi()));

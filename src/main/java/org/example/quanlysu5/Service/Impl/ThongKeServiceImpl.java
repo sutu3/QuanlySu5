@@ -219,10 +219,10 @@ public class ThongKeServiceImpl implements ThongKeService {
     public DashboardCtDangCtResponse thongKeDashboard(LocalDate date) {
 
         LocalDateTime start = date.atStartOfDay();
-        LocalDateTime end = date.atTime(LocalTime.MAX);
+        LocalDateTime end = date.atTime(23,59,59);;
 
         List<CtDangCtEntity> list =
-                ctDangCtRepo.findByCreatedAtBetween(start, end);
+                ctDangCtRepo.findAllCap2ByThoiGian("GS003",start, end);
         int tongDonVi = list.size();
 
         int donViCoKienNghi = (int) list.stream()

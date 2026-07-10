@@ -2,6 +2,7 @@ package org.example.quanlysu5.Service;
 
 import org.example.quanlysu5.Dto.Request.VaiTroRequest;
 import org.example.quanlysu5.Dto.Response.VaiTroResponse;
+import org.example.quanlysu5.Form.VaiTroForm;
 import org.example.quanlysu5.Module.VaiTroEntity;
 import org.springframework.stereotype.Service;
 
@@ -19,5 +20,9 @@ public interface VaiTroService {
     VaiTroResponse getRoleResponseById(String id);
 
     VaiTroResponse createRole(VaiTroRequest vaiTroRequest);
+
+    VaiTroResponse updateRole(VaiTroForm update,String idRole);
+
+    void deletedRole(String idRole);
 
 }

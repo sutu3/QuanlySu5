@@ -10,7 +10,7 @@ public class TrungDoan271Data {
 
         return List.of(
                 DonviRequest.builder()
-                        .tenDonvi("Trung oàn bộ")
+                        .tenDonvi("Trung doàn bộ")
                         .kyhieuDonvi("ebộ")
                         .donViCha(maCha)
                         .capDonVi(CapDonVi.TRUNG_DOAN.toString())
