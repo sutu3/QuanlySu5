@@ -1,11 +1,7 @@
 package org.example.quanlysu5.Config;
 
-import com.nimbusds.jose.JOSEException;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
-import org.example.quanlysu5.Dto.Request.IntrospectRequest;
-import org.example.quanlysu5.Service.Impl.AuthenticationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.Jwt;

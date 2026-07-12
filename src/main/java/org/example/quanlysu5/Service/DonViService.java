@@ -17,8 +17,10 @@ public interface DonViService {
     List<DonViResponse> toUnitsList();
 
     DonViResponse createDonVi(DonviRequest donviRequest);
+    DonViEntity getByKyHieuDonVi(String kyhieuDonvi);
 
     DonViResponse updateDonVi(String idDonVi, DonviForm update);
+
 
     DonViEntity getById(String id);
 }

@@ -7,12 +7,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface CtDangCtRepo extends JpaRepository<CtDangCtEntity,String> {
-    Optional<CtDangCtEntity> findByDonVi_MaDonVi(String maDonVi);
+    Optional<CtDangCtEntity> findByDonVi_MaDonVi(
+            String maDonVi);
     Optional<CtDangCtEntity> findByDonVi_MaDonViAndCreatedAtBetweenAndStatus(
             String idDonVi,
             LocalDateTime start,
@@ -37,7 +39,7 @@ public interface CtDangCtRepo extends JpaRepository<CtDangCtEntity,String> {
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
-    Optional<CtDangCtEntity> findByDonVi_MaDonViAndCreatedAtBetween(
+    CtDangCtEntity findByDonVi_MaDonViAndCreatedAtBetween(
             String idDonVi,
             LocalDateTime start,
             LocalDateTime end

@@ -107,6 +107,11 @@ public class DonViServiceImpl implements DonViService {
                 .moTa("Tài khoản " + SecurityUtils.getUsername() + "tạo thông tin đơn vị mới "+donVi.getTenDonvi())
                 .build());
         return donViMapper.toResponse(saved);
+    }@Override
+    public DonViEntity getByKyHieuDonVi(String kyHieuDonVi) {
+
+        return DonViRepo.findByKyhieuDonvi(kyHieuDonVi)
+                .orElseThrow(()->new AppException(ErrorCode.DONVI_NOT_FOUND));
     }
 
     @Override

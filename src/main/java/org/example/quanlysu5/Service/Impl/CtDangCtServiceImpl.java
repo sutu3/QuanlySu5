@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,20 +43,33 @@ public class CtDangCtServiceImpl implements CtDangCtService {
     NhatKyService nhatKyService;
     MyWebSocketHandler myWebSocketHandler;
     @Override
-    public List<CtDangCtResponse> getAllByDonViCha(String idDonViCha) {
-        DonViEntity donViCha=donViService.getById(idDonViCha);
-        List<CtDangCtEntity> ctEntities=new ArrayList<CtDangCtEntity>();
-        if(donViCha.getDonViCon()!=null){
-            donViCha.getDonViCon().forEach(donViCon->{
-                CtDangCtEntity ctDangCtEntity=ctDangCtRepo.findByDonVi_MaDonVi(donViCon.getMaDonVi())
-                        .orElseThrow(()->new AppException(ErrorCode.CTDANGCT_NOT_FOUND));
-                ctEntities.add(ctDangCtEntity);
-            });
+    public List<CtDangCtResponse> getAllByDonViCha(String idDonViCha, LocalDate ngayLoc) {
+
+        DonViEntity donViCha = donViService.getById(idDonViCha);
+
+        LocalDateTime start = ngayLoc.atStartOfDay();
+        LocalDateTime end = ngayLoc.atTime(23, 59, 59);
+
+        List<CtDangCtEntity> ctEntities = new ArrayList<>();
+
+        if (donViCha.getDonViCon() == null || donViCha.getDonViCon().isEmpty()) {
+            return Collections.emptyList();
         }
-        
+
+        for (DonViEntity donViCon : donViCha.getDonViCon()) {
+            if ("pct".equalsIgnoreCase(donViCon.getKyhieuDonvi())) {
+                continue;
+            }
+
+                    ctDangCtRepo.findByDonVi_MaDonViAndCreatedAtBetweenAndStatus(
+                            donViCon.getMaDonVi(),
+                            start,
+                            end,Status.Đã_Duyệt).ifPresent(ctEntities::add);
+        }
+
         return ctEntities.stream()
                 .map(ctDangCtMapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -81,7 +95,7 @@ public class CtDangCtServiceImpl implements CtDangCtService {
                 .doiTuongId(ctDangCtEntity.getIdCongtac())
                 .taiKhoan(SecurityUtils.getClaim("sub"))
                 .trangThai(TrangThaiNhatKy.THANH_CONG)
-                .moTa("Tài khoản " + SecurityUtils.getUsername() + "tạo thông tin công tác đảng, chính trị mới")
+                .moTa("Tài khoản " + SecurityUtils.getUsername() + " tạo thông tin công tác đảng, chính trị mới")
                 .build());
         return ctDangCtMapper.toResponse(ctDangCtEntity);
     }
@@ -138,8 +152,7 @@ public class CtDangCtServiceImpl implements CtDangCtService {
         LocalDateTime end = ngayLoc.atTime(23, 59, 59);
 
         CtDangCtEntity Reports =
-                ctDangCtRepo.findByDonVi_MaDonViAndCreatedAtBetween(idDonVi, start, end)
-                        .orElseThrow(() -> new AppException(ErrorCode.CTDANGCT_NOT_FOUND));
+                ctDangCtRepo.findByDonVi_MaDonViAndCreatedAtBetween(idDonVi, start, end) ;
         return ctDangCtMapper.toResponse(Reports);    }
 
     @Override
@@ -200,6 +213,7 @@ public class CtDangCtServiceImpl implements CtDangCtService {
                                 + " đã được phê duyệt và hoàn tất xử lý"
                 )
                 .build();
+        log.warn("Test: "+ctDangCtEntity.getDonVi().getDonViCha().getMaDonVi());
         myWebSocketHandler.sendToDonVi(ctDangCtEntity.getDonVi().getDonViCha().getMaDonVi(), jsonMessageDonVi, thongBaoDonVi);
 
         return ctDangCtMapper.toResponse(ctDangCtEntity);
@@ -242,6 +256,14 @@ public class CtDangCtServiceImpl implements CtDangCtService {
                 .noiDung("Đơn vị " + ctDangCtEntity.getDonVi().getTenDonvi() + " đã nộp báo cao Công tác đảng, Chính trị")
                 .tieuDe("Báo cáo đã nộp")
                 .build();
+        DonViEntity pct=donViService.getByKyHieuDonVi("pct");
+        DonViEntity tb_f5=donViService.getByKyHieuDonVi("CH/f");
+
+        if(ctDangCtEntity.getDonVi().getDonViCha().getMaDonVi().matches("GS003")){
+            log.warn("hehehehee");
+            myWebSocketHandler.sendToDonVi(pct.getMaDonVi(), jsonMessage, thongBaoRequest);
+            myWebSocketHandler.sendToDonVi(tb_f5.getMaDonVi(), jsonMessage, thongBaoRequest);
+        }
         myWebSocketHandler.sendToDonVi(ctDangCtEntity.getDonVi().getMaDonVi(), jsonMessage, thongBaoRequest);
         return ctDangCtMapper.toResponse(ctDangCtEntity);
     }

@@ -9,7 +9,6 @@ import org.example.quanlysu5.Dto.ApiResponse;
 import org.example.quanlysu5.Dto.Request.CtDangCtRequest;
 import org.example.quanlysu5.Dto.Request.GhiChuRequest;
 import org.example.quanlysu5.Dto.Response.CtDangCt.CtDangCtResponse;
-import org.example.quanlysu5.Dto.Response.DonBaoCao.DonBaoCaoResponse;
 import org.example.quanlysu5.Form.CtDangCtForm;
 import org.example.quanlysu5.Service.CtDangCtService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -151,7 +150,10 @@ public class CtDangCtController {
 
     @GetMapping("/search/donViCha/{idDonViCha}/children")
     public ApiResponse<List<CtDangCtResponse>> getAllByDonViCha(
-            @PathVariable String idDonViCha
+            @PathVariable String idDonViCha,
+             @RequestParam
+             @DateTimeFormat(pattern = "dd/MM/yyyy")
+                     LocalDate ngayLoc
     ) {
 
         return ApiResponse.<List<CtDangCtResponse>>builder()
@@ -159,7 +161,7 @@ public class CtDangCtController {
                 .success(true)
                 .message("Lấy danh sách theo đơn vị cha thành công")
                 .Result(
-                        ctDangCtService.getAllByDonViCha(idDonViCha)
+                        ctDangCtService.getAllByDonViCha(idDonViCha,ngayLoc)
                 )
                 .build();
     }

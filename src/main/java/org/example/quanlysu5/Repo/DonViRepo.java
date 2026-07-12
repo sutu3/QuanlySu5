@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface DonViRepo extends JpaRepository<DonViEntity, String>, JpaSpecificationExecutor<DonViEntity> {
     Page<DonViEntity> findAllByIsDeleted(Boolean isDeleted, Pageable pageable);
     List<DonViEntity> findAllByIsDeleted(Boolean isDeleted);
-    Optional<DonViEntity> findByKyhieuDonvi(String kyhieuDonvi0);
+    Optional<DonViEntity> findByKyhieuDonvi(String kyhieuDonvi);
     List<DonViEntity> findByDonViCha(DonViEntity donViCha);
     List<DonViEntity> findByDonViChaIsNull();
     //Page<UnitsEntity> findAllbyPage(Boolean isDeleted, Pageable pageable);

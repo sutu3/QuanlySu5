@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 public interface CtDangCtService {
-    List<CtDangCtResponse> getAllByDonViCha(String idDonViCha);
+    List<CtDangCtResponse> getAllByDonViCha(String idDonViCha,LocalDate ngayLoc);
     CtDangCtResponse getAllByIdDonVi(String idDonVi);
     CtDangCtResponse create(CtDangCtRequest request,String idNguoiTao);
     CtDangCtResponse update(CtDangCtForm update,String idCtDangCt);

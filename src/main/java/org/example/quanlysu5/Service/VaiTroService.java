@@ -15,6 +15,8 @@ public interface VaiTroService {
 
     VaiTroEntity getRoleById(String id);
 
+    VaiTroResponse getRoleByTaiKhoan(String idTaiKhoan);
+
     VaiTroEntity getRoleByName(String name);
 
     VaiTroResponse getRoleResponseById(String id);

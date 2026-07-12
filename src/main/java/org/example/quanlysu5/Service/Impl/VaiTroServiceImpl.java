@@ -10,10 +10,10 @@ import org.example.quanlysu5.Exception.AppException;
 import org.example.quanlysu5.Exception.ErrorCode;
 import org.example.quanlysu5.Form.VaiTroForm;
 import org.example.quanlysu5.Mapper.VaiTroMapper;
-import org.example.quanlysu5.Module.VaiTroEntity;
+import org.example.quanlysu5.Module.TaikhoanEntity;import org.example.quanlysu5.Module.VaiTroEntity;
 import org.example.quanlysu5.Repo.TaiKhoanRepo;
 import org.example.quanlysu5.Repo.VaiTroRepo;
-import org.example.quanlysu5.Service.VaiTroService;
+import org.example.quanlysu5.Service.TaiKhoanService;import org.example.quanlysu5.Service.VaiTroService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,6 +28,7 @@ public class VaiTroServiceImpl implements VaiTroService {
     private final TaiKhoanRepo taiKhoanRepo;
     VaiTroRepo vaiTroRepo;
     VaiTroMapper vaiTroMapper;
+    TaiKhoanService taiKhoanService;
 
 
     @Override
@@ -40,6 +41,10 @@ public class VaiTroServiceImpl implements VaiTroService {
     public VaiTroEntity getRoleById(String id) {
         return vaiTroRepo.findById(id)
                 .orElseThrow(()->new AppException(ErrorCode.ROLE_NOT_FOUND));
+    }@Override
+    public VaiTroResponse getRoleByTaiKhoan(String idTaiKhoan) {
+        TaikhoanEntity taikhoan= taiKhoanService.getTaiKhoanById(idTaiKhoan);
+        return vaiTroMapper.toResponse(taikhoan.getVaiTro());
     }
 
     @Override
