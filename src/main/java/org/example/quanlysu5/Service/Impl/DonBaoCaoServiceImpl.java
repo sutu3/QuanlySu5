@@ -20,14 +20,12 @@ import org.example.quanlysu5.Module.CaTrucEntity;
 import org.example.quanlysu5.Module.DonBaoCaoEntity;
 import org.example.quanlysu5.Module.DonViEntity;
 import org.example.quanlysu5.Repo.DonBaoCaoRepo;
-import org.example.quanlysu5.Service.CaTrucService;
-import org.example.quanlysu5.Service.DonBaoCaoService;
-import org.example.quanlysu5.Service.DonViService;
-import org.example.quanlysu5.Service.NhatKyService;
+import org.example.quanlysu5.Service.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,6 +41,7 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
     CaTrucService caTrucService;
     MyWebSocketHandler myWebSocketHandler;
     NhatKyService nhatKyService;
+    ThongBaoService thongBaoService;
 
     @Override
     public List<DonBaoCaoResponse> getAllDonBaoCaoToResponse() {
@@ -161,7 +160,7 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
                 .doiTuongId(donBaoCaoEntity.getIdDonBaoCao())
                 .taiKhoan(SecurityUtils.getClaim("sub"))
                 .trangThai(TrangThaiNhatKy.THANH_CONG)
-                .moTa("Tài khoản " + SecurityUtils.getUsername() + "Cập nhập thông tin đơn báo cáo thành "+Status.Đã_Duyệt)
+                .moTa("Tài khoản " + SecurityUtils.getUsername() + " Cập nhập thông tin đơn báo cáo thành "+Status.Đã_Duyệt)
                 .build());
         String jsonMessage = String.format(
                 "{\"title\":\"Báo cáo đã được duyệt\",\"message\":\"Đơn vị %s đã nộp và được duyệt báo cáo thành công\",\"type\":\"SUCCESS\"}",
@@ -190,7 +189,13 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
                 )
                 .build();
         myWebSocketHandler.sendToDonVi(donBaoCaoEntity.getDonVi().getDonViCha().getMaDonVi(), jsonMessageDonVi, thongBaoDonVi);
-
+        ThongBaoRequest thongBaoRefure = ThongBaoRequest.builder()
+                .loaiThongBao("SUCCESS")
+                .idMuctieu(donBaoCaoEntity.getNguoiTao())
+                .noiDung("Báo cáo ngày " + LocalDate.now() + " đã được duyệt")
+                .tieuDe("Báo cáo đã được duyệt")
+                .build();
+        thongBaoService.createThongBaoTaiKhoan(thongBaoRefure);
         return DonBaoCaoMapper.toResponse(donBaoCaoEntity);
     }
 
@@ -205,7 +210,7 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
                     .doiTuongId(donBaoCaoEntity.getIdDonBaoCao())
                     .taiKhoan(SecurityUtils.getClaim("sub"))
                     .trangThai(TrangThaiNhatKy.THANH_CONG)
-                    .moTa("Tài khoản " + SecurityUtils.getUsername() + "Cập nhập thông tin đơn báo cáo thành "+Status.Chờ_Duyệt)
+                    .moTa("Tài khoản " + SecurityUtils.getUsername() + " Cập nhập thông tin đơn báo cáo thành "+Status.Chờ_Duyệt)
                     .build());
             donBaoCaoEntity.setStatus(Status.Chờ_Duyệt);
         } else {
@@ -215,7 +220,7 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
                     .doiTuongId(donBaoCaoEntity.getIdDonBaoCao())
                     .taiKhoan(SecurityUtils.getClaim("sub"))
                     .trangThai(TrangThaiNhatKy.THANH_CONG)
-                    .moTa("Tài khoản " + SecurityUtils.getUsername() + "Cập nhập thông tin đơn báo cáo thành "+Status.Đã_Duyệt)
+                    .moTa("Tài khoản " + SecurityUtils.getUsername() + " Cập nhập thông tin đơn báo cáo thành "+Status.Đã_Duyệt)
                     .build());
             donBaoCaoEntity.setStatus(Status.Đã_Duyệt);
         }
@@ -247,7 +252,7 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
                 .doiTuongId(donBaoCaoEntity.getIdDonBaoCao())
                 .taiKhoan(SecurityUtils.getClaim("sub"))
                 .trangThai(TrangThaiNhatKy.THANH_CONG)
-                .moTa("Tài khoản " + SecurityUtils.getUsername() + "Cập nhập thông tin đơn báo cáo thành "+Status.Nháp)
+                .moTa("Tài khoản " + SecurityUtils.getUsername() + " Cập nhập thông tin đơn báo cáo thành "+Status.Nháp)
                 .build());
         String jsonMessage = String.format(
                 "{\"title\":\"Báo cáo đã bị thu hồi\",\"message\":\"Báo cáo của đơn vị %s đã được thu hồi và không còn chờ phê duyệt\",\"type\":\"WARNING\"}",
@@ -280,7 +285,7 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
                 .doiTuongId(donBaoCaoEntity.getIdDonBaoCao())
                 .taiKhoan(SecurityUtils.getClaim("sub"))
                 .trangThai(TrangThaiNhatKy.THANH_CONG)
-                .moTa("Tài khoản " + SecurityUtils.getUsername() + "Cập nhập thông tin đơn báo cáo thành "+Status.Từ_Chối)
+                .moTa("Tài khoản " + SecurityUtils.getUsername() + " Cập nhập thông tin đơn báo cáo thành "+Status.Từ_Chối)
                 .build());
         String jsonMessage = String.format(
                 "{\"title\":\"Báo cáo bị từ chối\",\"message\":\"Báo cáo của đơn vị %s đã bị từ chối. Vui lòng kiểm tra ghi chú và chỉnh sửa.\",\"type\":\"WARNING\"}",
@@ -297,6 +302,13 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
                 )
                 .build();
         myWebSocketHandler.sendToUser(donBaoCaoEntity.getNguoiTao(), jsonMessage, thongBaoRequest);
+        ThongBaoRequest thongBaoRefure = ThongBaoRequest.builder()
+                .loaiThongBao("WARN")
+                .idMuctieu(donBaoCaoEntity.getNguoiTao())
+                .noiDung("Báo cáo ngày " + LocalDate.now() + " đã bị từ chối và được trả lại")
+                .tieuDe("Báo cáo đã từ chối")
+                .build();
+        thongBaoService.createThongBaoTaiKhoan(thongBaoRefure);
 
         DonBaoCaoRepo.save(donBaoCaoEntity);
         return DonBaoCaoMapper.toResponse(donBaoCaoEntity);
@@ -312,7 +324,7 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
                             .doiTuongId(idDonBaoCao)
                             .taiKhoan(SecurityUtils.getClaim("sub"))
                             .trangThai(TrangThaiNhatKy.THAT_BAI)
-                            .moTa("Tài khoản " + SecurityUtils.getUsername() + "không cập nhập thông tin đơn báo cáo do "+ErrorCode.DONBAOCAO_NOT_FOUND)
+                            .moTa("Tài khoản " + SecurityUtils.getUsername() + " không cập nhập thông tin đơn báo cáo do "+ErrorCode.DONBAOCAO_NOT_FOUND)
                             .build());
                     return new AppException(ErrorCode.DONBAOCAO_NOT_FOUND);
                 });
@@ -327,7 +339,7 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
                     .doiTuongId(DonBaoCao.getIdDonBaoCao())
                     .taiKhoan(SecurityUtils.getClaim("sub"))
                     .trangThai(TrangThaiNhatKy.THANH_CONG)
-                    .moTa("Tài khoản " + SecurityUtils.getUsername() + "Cập nhập thông tin đơn báo cáo thành "+Status.Nháp)
+                    .moTa("Tài khoản " + SecurityUtils.getUsername() + " Cập nhập thông tin đơn báo cáo thành "+Status.Nháp)
                     .build());
 
         }
@@ -344,7 +356,7 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
                             .doiTuongId(idDonBaoCao)
                             .taiKhoan(SecurityUtils.getClaim("sub"))
                             .trangThai(TrangThaiNhatKy.THAT_BAI)
-                            .moTa("Tài khoản " + SecurityUtils.getUsername() + "không cập nhập thông tin đơn báo cáo do "+ErrorCode.DONBAOCAO_NOT_FOUND)
+                            .moTa("Tài khoản " + SecurityUtils.getUsername() + " không cập nhập thông tin đơn báo cáo do "+ErrorCode.DONBAOCAO_NOT_FOUND)
                             .build());
                     return new AppException(ErrorCode.DONBAOCAO_NOT_FOUND);
                 });

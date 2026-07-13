@@ -3,15 +3,20 @@ package org.example.quanlysu5.Service.Impl;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.example.quanlysu5.Dto.Response.CtDangCt.DashboardCtDangCtResponse;
 import org.example.quanlysu5.Dto.Response.CtDangCt.ThongKeDonViCtDangCtResponse;
 import org.example.quanlysu5.Dto.Response.ThongKe.*;
+import org.example.quanlysu5.Enum.CapDonVi;
+import org.example.quanlysu5.Hepler.SecurityUtils;
 import org.example.quanlysu5.Hepler.TimeUtils;
 import org.example.quanlysu5.Module.CtDangCtEntity;
 import org.example.quanlysu5.Module.DonBaoCaoEntity;
+import org.example.quanlysu5.Module.TaikhoanEntity;
 import org.example.quanlysu5.Repo.CtDangCtRepo;
 import org.example.quanlysu5.Repo.DonBaoCaoRepo;
+import org.example.quanlysu5.Service.TaiKhoanService;
 import org.example.quanlysu5.Service.ThongKeService;
 import org.springframework.stereotype.Service;
 
@@ -25,9 +30,11 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class ThongKeServiceImpl implements ThongKeService {
     private final CtDangCtRepo ctDangCtRepo;
+    TaiKhoanService taiKhoanService;
 
     private final DonBaoCaoRepo donBaoCaoRepo;
     TimeUtils timeUtils;
@@ -35,11 +42,12 @@ public class ThongKeServiceImpl implements ThongKeService {
     @Override
     public ThongKeResponse thongKeQuanSo(LocalDate ngayBaoCao) {
 
+        TaikhoanEntity taikhoan= taiKhoanService.getTaiKhoanById(SecurityUtils.getClaim("sub"));
         LocalDateTime start = ngayBaoCao.atStartOfDay();
         LocalDateTime end = ngayBaoCao.atTime(23,59,59);
 
         List<DonBaoCaoEntity> reports =
-                donBaoCaoRepo.findAllCap2ByThoiGian("GS003",start,end);
+                donBaoCaoRepo.findAllCap2ByThoiGian(taikhoan.getDonVi().getCapDonVi()== CapDonVi.SU_DOAN||taikhoan.getDonVi().getCapDonVi()== CapDonVi.PHONG?"GS003":taikhoan.getDonVi().getMaDonVi(),start,end);
 
         // ======================
         // Tổng hợp quân số
@@ -217,12 +225,12 @@ public class ThongKeServiceImpl implements ThongKeService {
 
     @Override
     public DashboardCtDangCtResponse thongKeDashboard(LocalDate date) {
-
+        TaikhoanEntity taikhoan= taiKhoanService.getTaiKhoanById(SecurityUtils.getClaim("sub"));
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end = date.atTime(23,59,59);;
 
         List<CtDangCtEntity> list =
-                ctDangCtRepo.findAllCap2ByThoiGian("GS003",start, end);
+                ctDangCtRepo.findAllCap2ByThoiGian(taikhoan.getDonVi().getCapDonVi()== CapDonVi.SU_DOAN||taikhoan.getDonVi().getCapDonVi()== CapDonVi.PHONG?"GS003":taikhoan.getDonVi().getMaDonVi(),start, end);
         int tongDonVi = list.size();
 
         int donViCoKienNghi = (int) list.stream()

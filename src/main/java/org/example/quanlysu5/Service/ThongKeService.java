@@ -11,6 +11,6 @@ import java.time.LocalDate;
 public interface ThongKeService {
 
     ThongKeResponse thongKeQuanSo(LocalDate ngayBaoCao);
-    DashboardCtDangCtResponse thongKeDashboard(LocalDate date);;
+    DashboardCtDangCtResponse thongKeDashboard(LocalDate date);
 
 }

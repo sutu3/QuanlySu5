@@ -9,5 +9,6 @@ public enum HanhDongNhatKy {
     APPROVE,
     REJECT,
     LOCK,
-    UNLOCK
+    UNLOCK,
+    UPDATE_FUNCTION
 }

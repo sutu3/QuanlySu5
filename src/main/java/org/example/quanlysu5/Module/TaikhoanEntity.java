@@ -5,7 +5,9 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @SuperBuilder
@@ -40,4 +42,20 @@ public class TaikhoanEntity extends BaseEntity{
     @Column(columnDefinition = "BOOL COMMENT 'trạng thái khóa tài khoản'", nullable = false)
     Boolean khoa = false;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "taikhoan_chucnang_them",
+            joinColumns = @JoinColumn(name = "id_tai_khoan")
+    )
+    @Column(name = "ten_chucnang")
+    Set<String> chucNangThem = new HashSet<>();
+
+    // Chức năng bị BỎ riêng cho tài khoản này (dù vai trò có)
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "taikhoan_chucnang_bo",
+            joinColumns = @JoinColumn(name = "id_tai_khoan")
+    )
+    @Column(name = "ten_chucnang")
+    Set<String> chucNangBo = new HashSet<>();
 }

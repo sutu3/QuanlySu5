@@ -28,7 +28,7 @@ public class VaiTroServiceImpl implements VaiTroService {
     private final TaiKhoanRepo taiKhoanRepo;
     VaiTroRepo vaiTroRepo;
     VaiTroMapper vaiTroMapper;
-    TaiKhoanService taiKhoanService;
+
 
 
     @Override
@@ -43,7 +43,8 @@ public class VaiTroServiceImpl implements VaiTroService {
                 .orElseThrow(()->new AppException(ErrorCode.ROLE_NOT_FOUND));
     }@Override
     public VaiTroResponse getRoleByTaiKhoan(String idTaiKhoan) {
-        TaikhoanEntity taikhoan= taiKhoanService.getTaiKhoanById(idTaiKhoan);
+        TaikhoanEntity taikhoan= taiKhoanRepo.findById(idTaiKhoan)
+                .orElseThrow(()->new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
         return vaiTroMapper.toResponse(taikhoan.getVaiTro());
     }
 

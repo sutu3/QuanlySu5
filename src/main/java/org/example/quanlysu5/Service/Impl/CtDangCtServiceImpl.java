@@ -112,7 +112,7 @@ public class CtDangCtServiceImpl implements CtDangCtService {
                 .doiTuongId(ctDangCtEntity.getIdCongtac())
                 .taiKhoan(SecurityUtils.getClaim("sub"))
                 .trangThai(TrangThaiNhatKy.THANH_CONG)
-                .moTa("Tài khoản " + SecurityUtils.getUsername() + "cập nhập trạng thái công tác đảng, chính trị thành"+Status.Nháp.toString())
+                .moTa("Tài khoản " + SecurityUtils.getUsername() + " cập nhập trạng thái công tác đảng, chính trị thành "+Status.Nháp.toString())
                 .build());
         return ctDangCtMapper.toResponse(ctDangCtEntity);
     }
@@ -196,7 +196,7 @@ public class CtDangCtServiceImpl implements CtDangCtService {
                 .doiTuongId(ctDangCtEntity.getIdCongtac())
                 .taiKhoan(SecurityUtils.getClaim("sub"))
                 .trangThai(TrangThaiNhatKy.THANH_CONG)
-                .moTa("Tài khoản " + SecurityUtils.getUsername() + "cập nhập trạng thái công tác đảng, chính trị thành"+Status.Đã_Duyệt.toString())
+                .moTa("Tài khoản " + SecurityUtils.getUsername() + " cập nhập trạng thái công tác đảng, chính trị thành "+Status.Đã_Duyệt.toString())
                 .build());
         String jsonMessageDonVi = String.format(
                 "{\"title\":\"Đã duyệt báo cáo\",\"message\":\"Báo cáo Công tác Đảng, Chính trị của đơn vị %s đã được phê duyệt và hoàn tất xử lý\",\"type\":\"SUCCESS\"}",
@@ -231,7 +231,7 @@ public class CtDangCtServiceImpl implements CtDangCtService {
                     .doiTuongId(ctDangCtEntity.getIdCongtac())
                     .taiKhoan(SecurityUtils.getClaim("sub"))
                     .trangThai(TrangThaiNhatKy.THANH_CONG)
-                    .moTa("Tài khoản " + SecurityUtils.getUsername() + "cập nhập trạng thái công tác đảng, chính trị thành"+Status.Chờ_Duyệt.toString())
+                    .moTa("Tài khoản " + SecurityUtils.getUsername() + " cập nhập trạng thái công tác đảng, chính trị thành "+Status.Chờ_Duyệt.toString())
                     .build());
         } else {
             ctDangCtEntity.setStatus(Status.Đã_Duyệt);
@@ -241,7 +241,7 @@ public class CtDangCtServiceImpl implements CtDangCtService {
                     .doiTuongId(ctDangCtEntity.getIdCongtac())
                     .taiKhoan(SecurityUtils.getClaim("sub"))
                     .trangThai(TrangThaiNhatKy.THANH_CONG)
-                    .moTa("Tài khoản " + SecurityUtils.getUsername() + "cập nhập trạng thái công tác đảng, chính trị thành"+Status.Đã_Duyệt.toString())
+                    .moTa("Tài khoản " + SecurityUtils.getUsername() + " cập nhập trạng thái công tác đảng, chính trị thành "+Status.Đã_Duyệt.toString())
                     .build());
         }
         ctDangCtEntity.setUpdatedAt(LocalDateTime.now());
@@ -279,7 +279,7 @@ public class CtDangCtServiceImpl implements CtDangCtService {
                 .doiTuongId(ctDangCtEntity.getIdCongtac())
                 .taiKhoan(SecurityUtils.getClaim("sub"))
                 .trangThai(TrangThaiNhatKy.THANH_CONG)
-                .moTa("Tài khoản " + SecurityUtils.getUsername() + "cập nhập trạng thái công tác đảng, chính trị thành"+Status.Nháp.toString())
+                .moTa("Tài khoản " + SecurityUtils.getUsername() + " cập nhập trạng thái công tác đảng, chính trị thành "+Status.Nháp.toString())
                 .build());
         ctDangCtRepo.save(ctDangCtEntity);
         String jsonMessage = String.format(
@@ -313,7 +313,7 @@ public class CtDangCtServiceImpl implements CtDangCtService {
                 .doiTuongId(ctDangCtEntity.getIdCongtac())
                 .taiKhoan(SecurityUtils.getClaim("sub"))
                 .trangThai(TrangThaiNhatKy.THANH_CONG)
-                .moTa("Tài khoản " + SecurityUtils.getUsername() + "cập nhập trạng thái công tác đảng, chính trị thành"+Status.Từ_Chối.toString())
+                .moTa("Tài khoản " + SecurityUtils.getUsername() + " cập nhập trạng thái công tác đảng, chính trị thành "+Status.Từ_Chối.toString())
                 .build());
         String jsonMessage = String.format(
                 "{\"title\":\"Báo cáo bị từ chối\",\"message\":\"Báo cáo của đơn vị %s đã bị từ chối. Vui lòng kiểm tra ghi chú và chỉnh sửa.\",\"type\":\"WARNING\"}",

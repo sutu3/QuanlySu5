@@ -251,7 +251,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
             log.warn(thongBaoRequest.toString());
 
             thongBaoService
-                    .createThongBaoDonVi(
+                    .createThongBaoTaiKhoan(
                             thongBaoRequest
                     );
         }

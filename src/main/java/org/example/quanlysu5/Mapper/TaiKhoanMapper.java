@@ -14,8 +14,10 @@ public interface TaiKhoanMapper {
     @Mapping(target = "isDeleted", ignore = true)
     @Mapping(target = "vaiTro",ignore = true)
     @Mapping(target = "donVi",ignore = true)
+    @Mapping(target = "chucNangThem", ignore = true)
+    @Mapping(target = "chucNangBo", ignore = true)
     TaikhoanEntity toEntity(TaiKhoanRequest request);
 
-//    @Mapping(target = "role",ignore = true)
+    @Mapping(target = "tenChucnang", ignore = true)
     TaiKhoanResponse toResponse(TaikhoanEntity taikhoanEntity);
 }

@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.example.quanlysu5.Dto.ApiResponse;
+import org.example.quanlysu5.Dto.Request.ChucNangOverrideRequest;
 import org.example.quanlysu5.Dto.Request.ResetPasswordRequest;
 import org.example.quanlysu5.Dto.Request.TaiKhoanRequest;
 import org.example.quanlysu5.Dto.Response.TaiKhoan.TaiKhoanResponse;
@@ -108,6 +109,23 @@ public class AccountController {
                 .code(1000)
                 .message("Mở khóa tài khoản thành công")
                 .Result(taiKhoanService.unlockTaiKhoan(id))
+                .build();
+    }
+    @PutMapping("/{idTaiKhoan}/chucnang")
+    public ApiResponse<TaiKhoanResponse> updateOverride(
+            @PathVariable String idTaiKhoan,
+            @RequestBody ChucNangOverrideRequest request) {
+
+        return ApiResponse.<TaiKhoanResponse>builder()
+                .success(true)
+                .code(1000)
+                .message("Cập nhâp tài khoản thành công")
+                .Result(
+                        taiKhoanService.updateChucNangOverride(
+                                idTaiKhoan,
+                                request
+                        )
+                )
                 .build();
     }
 }

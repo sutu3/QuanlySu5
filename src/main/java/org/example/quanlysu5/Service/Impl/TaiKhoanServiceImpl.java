@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.example.quanlysu5.Config.MyWebSocketHandler;
+import org.example.quanlysu5.Dto.Request.ChucNangOverrideRequest;
 import org.example.quanlysu5.Dto.Request.NhatKyRequest;
 import org.example.quanlysu5.Dto.Request.TaiKhoanRequest;
 import org.example.quanlysu5.Dto.Request.ThongBaoRequest;
@@ -21,21 +22,23 @@ import org.example.quanlysu5.Module.TaikhoanEntity;
 import org.example.quanlysu5.Module.VaiTroEntity;
 import org.example.quanlysu5.Repo.DonViRepo;
 import org.example.quanlysu5.Repo.TaiKhoanRepo;
-import org.example.quanlysu5.Service.*;
-import org.hibernate.validator.internal.util.stereotypes.Lazy;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.example.quanlysu5.Service.DonViService;
+import org.example.quanlysu5.Service.NhatKyService;
+import org.example.quanlysu5.Service.TaiKhoanService;
+import org.example.quanlysu5.Service.VaiTroService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TaiKhoanServiceImpl implements TaiKhoanService {
-    private final DonViRepo donViRepo;
     private final TaiKhoanRepo taiKhoanRepo;
     TaiKhoanMapper taiKhoanMapper;
     DonViService donViService;
@@ -43,6 +46,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     NhatKyService nhatKyService;
     PasswordEncoder passwordEncoder;
     MyWebSocketHandler myWebSocketHandler;
+
     @Override
     public TaikhoanEntity getTaiKhoanById(String id) {
         log.info("Id user: " + id);
@@ -54,7 +58,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     public TaiKhoanResponse getTaiKhoanResponse(String id) {
         TaikhoanEntity account = getTaiKhoanById(id);
 
-        return taiKhoanMapper.toResponse(account);
+        return toResponseWithChucNang(account);
     }
 
     @Override
@@ -68,7 +72,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
                             .hanhDong(HanhDongNhatKy.CREATE)
                             .taiKhoan(account.getIdTaiKhoan())
                             .trangThai(TrangThaiNhatKy.THAT_BAI)
-                            .moTa("Tài khoản " + SecurityUtils.getUsername() + " Tạo tài khoản thất bại do "+ErrorCode.ACCOUNT_IS_EXIST.getMessage())
+                            .moTa("Tài khoản " + SecurityUtils.getUsername() + " Tạo tài khoản thất bại do " + ErrorCode.ACCOUNT_IS_EXIST.getMessage())
                             .build());
                     throw new AppException(ErrorCode.ACCOUNT_IS_EXIST);
                 });
@@ -78,7 +82,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
                     .hanhDong(HanhDongNhatKy.CREATE)
                     .taiKhoan(taikhoanEntity.getIdTaiKhoan())
                     .trangThai(TrangThaiNhatKy.THAT_BAI)
-                    .moTa("Tài khoản " + SecurityUtils.getUsername() + " Tạo tài khoản thất bại do "+ErrorCode.ACCOUNT_IS_EXIST.getMessage())
+                    .moTa("Tài khoản " + SecurityUtils.getUsername() + " Tạo tài khoản thất bại do " + ErrorCode.ACCOUNT_IS_EXIST.getMessage())
                     .build());
             throw new AppException(ErrorCode.ACCOUNT_IS_EXIST);
         }
@@ -89,14 +93,16 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         taikhoanEntity.setVaiTro(vaiTroEntity);
         taikhoanEntity.setIsDeleted(false);
         taikhoanEntity.setCreatedAt(LocalDateTime.now());
-        return taiKhoanMapper.toResponse(taiKhoanRepo.save(taikhoanEntity));
+        TaikhoanEntity saved = taiKhoanRepo.save(taikhoanEntity);
+
+        return toResponseWithChucNang(saved);
     }
 
     @Override
     public List<TaiKhoanResponse> getAllTaiKhoan() {
         return taiKhoanRepo.findByIsDeletedFalse()
                 .stream()
-                .map(taiKhoanMapper::toResponse)
+                .map(this::toResponseWithChucNang)
                 .toList();
     }
 
@@ -120,10 +126,12 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
                 .doiTuongId(idTaiKhoan)
                 .taiKhoan(SecurityUtils.getClaim("sub"))
                 .trangThai(TrangThaiNhatKy.THANH_CONG)
-                .moTa("Tài khoản " + SecurityUtils.getUsername() + " Cập nhập tài khoản "+request.getTenTaiKhoan())
+                .moTa("Tài khoản " + SecurityUtils.getUsername() + " Cập nhập tài khoản " + request.getTenTaiKhoan())
                 .build());
 
-        return taiKhoanMapper.toResponse(taiKhoanRepo.save(taiKhoan));
+        TaikhoanEntity saved = taiKhoanRepo.save(taiKhoan);
+
+        return toResponseWithChucNang(saved);
     }
 
     @Override
@@ -137,7 +145,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
                 .doiTuongId(idTaiKhoan)
                 .taiKhoan(SecurityUtils.getClaim("sub"))
                 .trangThai(TrangThaiNhatKy.THANH_CONG)
-                .moTa("Tài khoản " + SecurityUtils.getUsername() + " Xóa tài khoản "+taiKhoan.getTenTaiKhoan())
+                .moTa("Tài khoản " + SecurityUtils.getUsername() + " Xóa tài khoản " + taiKhoan.getTenTaiKhoan())
                 .build());
         taiKhoan.setIsDeleted(true);
         taiKhoan.setDeletedAt(LocalDateTime.now());
@@ -155,7 +163,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
                 .doiTuongId(idTaiKhoan)
                 .taiKhoan(SecurityUtils.getClaim("sub"))
                 .trangThai(TrangThaiNhatKy.THANH_CONG)
-                .moTa("Tài khoản " + SecurityUtils.getUsername() + " Cập nhập mật khẩu tài khoản "+taiKhoan.getTenTaiKhoan())
+                .moTa("Tài khoản " + SecurityUtils.getUsername() + " Cập nhập mật khẩu tài khoản " + taiKhoan.getTenTaiKhoan())
                 .build());
         taiKhoan.setMatKhau(passwordEncoder.encode(matKhauMoi));
         taiKhoanRepo.save(taiKhoan);
@@ -171,7 +179,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
                 .doiTuongId(id)
                 .taiKhoan(SecurityUtils.getClaim("sub"))
                 .trangThai(TrangThaiNhatKy.THANH_CONG)
-                .moTa("Tài khoản " + SecurityUtils.getUsername() + " Khóa tài khoản "+taiKhoan.getTenTaiKhoan())
+                .moTa("Tài khoản " + SecurityUtils.getUsername() + " Khóa tài khoản " + taiKhoan.getTenTaiKhoan())
                 .build());
         String jsonMessage = """
                 {
@@ -188,8 +196,10 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
                         "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên để biết thêm thông tin."
                 )
                 .build();
-        myWebSocketHandler.sendToUser( taiKhoan.getIdTaiKhoan(),jsonMessage, thongBaoRequest);
-        return taiKhoanMapper.toResponse(taiKhoanRepo.save(taiKhoan));
+        myWebSocketHandler.sendToUser(taiKhoan.getIdTaiKhoan(), jsonMessage, thongBaoRequest);
+        TaikhoanEntity saved = taiKhoanRepo.save(taiKhoan);
+
+        return toResponseWithChucNang(saved);
     }
 
     @Override
@@ -201,9 +211,71 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
                 .doiTuongId(id)
                 .taiKhoan(SecurityUtils.getClaim("sub"))
                 .trangThai(TrangThaiNhatKy.THANH_CONG)
-                .moTa("Tài khoản " + SecurityUtils.getUsername() + " Mở khóa tài khoản "+taiKhoan.getTenTaiKhoan())
+                .moTa("Tài khoản " + SecurityUtils.getUsername() + " Mở khóa tài khoản " + taiKhoan.getTenTaiKhoan())
                 .build());
         taiKhoan.setKhoa(false);
-        return taiKhoanMapper.toResponse(taiKhoanRepo.save(taiKhoan));
+        TaikhoanEntity saved = taiKhoanRepo.save(taiKhoan);
+
+        return toResponseWithChucNang(saved);
+    }
+
+    @Override
+    public Set<String> getChucNangHieuLuc(TaikhoanEntity account) {
+        Set<String> ketQua = new HashSet<>();
+        if (account.getVaiTro() != null && account.getVaiTro().getTenChucnang() != null) {
+            ketQua.addAll(account.getVaiTro().getTenChucnang());
+        }
+        if (account.getChucNangThem() != null) {
+            ketQua.addAll(account.getChucNangThem());
+        }
+        if (account.getChucNangBo() != null) {
+            ketQua.removeAll(account.getChucNangBo());
+        }
+        return ketQua;
+    }
+
+    // Map entity -> response và gắn sẵn quyền hiệu lực
+    private TaiKhoanResponse toResponseWithChucNang(TaikhoanEntity account) {
+        TaiKhoanResponse response = taiKhoanMapper.toResponse(account);
+        response.setTenChucnang(getChucNangHieuLuc(account));
+        return response;
+    }
+
+    @Override
+    public TaiKhoanResponse updateChucNangOverride(String idTaiKhoan, ChucNangOverrideRequest request) {
+        TaikhoanEntity taiKhoan = taiKhoanRepo
+                .findByIdTaiKhoanAndIsDeletedFalse(idTaiKhoan)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        taiKhoan.setChucNangThem(request.getChucNangThem() != null
+                ? new HashSet<>(request.getChucNangThem()) : new HashSet<>());
+        taiKhoan.setChucNangBo(request.getChucNangBo() != null
+                ? new HashSet<>(request.getChucNangBo()) : new HashSet<>());
+
+        nhatKyService.createNhatKy(NhatKyRequest.builder()
+                .doiTuong(DoiTuongNhatKy.TAI_KHOAN)
+                .hanhDong(HanhDongNhatKy.UPDATE_FUNCTION)
+                .doiTuongId(idTaiKhoan)
+                .taiKhoan(SecurityUtils.getClaim("sub"))
+                .trangThai(TrangThaiNhatKy.THANH_CONG)
+                .moTa("Tài khoản " + SecurityUtils.getUsername()
+                        + " Cập nhật quyền override cho tài khoản " + taiKhoan.getTenTaiKhoan())
+                .build());
+        String jsonMessage = """
+                {
+                    "type":"UPDATE_FUNCTION",
+                    "title":"Quyền truy cập đã được cập nhật",
+                    "message":"Quyền truy cập của tài khoản đã được quản trị viên cập nhật. Vui lòng đăng nhập lại để áp dụng thay đổi."
+                }
+                """;
+        ThongBaoRequest thongBaoRequest = ThongBaoRequest.builder()
+                .loaiThongBao("UPDATE_FUNCTION")
+                .idMuctieu(idTaiKhoan)
+                .tieuDe("Quyền truy cập đã được cập nhật")
+                .noiDung("Quyền truy cập của bạn đã được quản trị viên cập nhật. Vui lòng đăng nhập lại để áp dụng thay đổi.")
+                .build();
+        myWebSocketHandler.sendToUser(idTaiKhoan, jsonMessage, thongBaoRequest);
+
+        return toResponseWithChucNang(taiKhoanRepo.save(taiKhoan));
     }
 }

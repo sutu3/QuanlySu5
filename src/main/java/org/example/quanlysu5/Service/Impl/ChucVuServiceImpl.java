@@ -59,7 +59,7 @@ public class ChucVuServiceImpl implements ChucVuService {
                     .hanhDong(HanhDongNhatKy.CREATE)
                     .taiKhoan(SecurityUtils.getClaim("sub"))
                     .trangThai(TrangThaiNhatKy.THAT_BAI)
-                    .moTa("Tài khoản " + SecurityUtils.getUsername() + "tạo thông tin chức vụ thất bại do "+ErrorCode.CHUCVU_IS_EXIST)
+                    .moTa("Tài khoản " + SecurityUtils.getUsername() + " tạo thông tin chức vụ thất bại do "+ErrorCode.CHUCVU_IS_EXIST)
                     .build());
             throw new AppException(ErrorCode.CHUCVU_IS_EXIST);
         }
@@ -72,7 +72,7 @@ public class ChucVuServiceImpl implements ChucVuService {
                 .hanhDong(HanhDongNhatKy.CREATE)
                 .taiKhoan(SecurityUtils.getClaim("sub"))
                 .trangThai(TrangThaiNhatKy.THANH_CONG)
-                .moTa("Tài khoản " + SecurityUtils.getUsername() + "tạo thông tin chức vụ mới"+chucVuEntity.getTenChucVu())
+                .moTa("Tài khoản " + SecurityUtils.getUsername() + " tạo thông tin chức vụ mới"+chucVuEntity.getTenChucVu())
                 .build());
         return chucVuMapper.toResponse(chucVuEntity);
     }
