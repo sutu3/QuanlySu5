@@ -22,10 +22,7 @@ import org.example.quanlysu5.Mapper.CaTrucMapper;
 import org.example.quanlysu5.Module.CaTrucEntity;
 import org.example.quanlysu5.Module.TrucBanTacChienEntity;
 import org.example.quanlysu5.Module.TrucChiHuyEntity;
-import org.example.quanlysu5.Repo.CaTrucRepo;
-import org.example.quanlysu5.Repo.KhungGioBaoCaoRepo;
-import org.example.quanlysu5.Repo.TrucBanTacChienRepo;
-import org.example.quanlysu5.Repo.TrucChiHuyRepo;
+import org.example.quanlysu5.Repo.*;
 import org.example.quanlysu5.Service.CaTrucService;
 import org.example.quanlysu5.Service.NhatKyService;
 import org.example.quanlysu5.Service.TrucBanTacChienService;
@@ -44,6 +41,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class CaTrucServiceImpl implements CaTrucService {
+    private final DonBaoCaoRepo donBaoCaoRepo;
     private final TrucBanTacChienRepo trucBanTacChienRepo;
     private final TrucChiHuyRepo trucChiHuyRepo;
     private final CaTrucRepo caTrucRepo;
@@ -162,6 +160,21 @@ public class CaTrucServiceImpl implements CaTrucService {
             return new AppException(ErrorCode.CATRUC_NOT_FOUND);
         });
         caTrucMapper.update(caTruc,update);
+        TrucBanTacChienEntity trucBanTacChien=trucBanTacChienService.getByIdNguoiTruc(update.getTrucBanTacChien());
+        TrucChiHuyEntity trucChiHuy=trucChiHuyService.getByIdNguoiTruc(update.getTrucChiHuy());
+        caTruc.setTrucChiHuy(trucChiHuy);
+        caTruc.setTrucBanTacChien(trucBanTacChien);
+        if(donBaoCaoRepo.existsByCaTruc_IdCatruc(idCaTruc)){
+            nhatKyService.createNhatKy(NhatKyRequest.builder()
+                    .doiTuong(DoiTuongNhatKy.CA_TRUC)
+                    .hanhDong(HanhDongNhatKy.UPDATE)
+                    .doiTuongId(idCaTruc)
+                    .taiKhoan(SecurityUtils.getClaim("sub"))
+                    .trangThai(TrangThaiNhatKy.THAT_BAI)
+                    .moTa("Tài khoản " + SecurityUtils.getUsername() + " cập nhập thông tin ca trực thất bại do "+ErrorCode.SHIFT_CANNOT_UPDATE_BECAUSE_REPORT_EXISTS)
+                    .build());
+            throw new AppException(ErrorCode.SHIFT_CANNOT_UPDATE_BECAUSE_REPORT_EXISTS);
+        }
         caTrucRepo.save(caTruc);
         nhatKyService.createNhatKy(NhatKyRequest.builder()
                 .doiTuong(DoiTuongNhatKy.CA_TRUC)

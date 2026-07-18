@@ -32,6 +32,11 @@ public enum ErrorCode {
     DONVI_IS_EXIST(1003,"Đơn vị đã tồn tại", HttpStatus.CONFLICT),
     CATRUC_NOT_FOUND(1002,"Không tìm thấy ca trưc", HttpStatus.NOT_FOUND),
     CATRUC_IS_EXIST(1003,"Ca trực đã tồn tại", HttpStatus.CONFLICT),
+    SHIFT_CANNOT_UPDATE_BECAUSE_REPORT_EXISTS(
+            1006,
+            "Không thể chỉnh sửa ca trực vì ca trực này đã được lập đơn báo cáo.",
+            HttpStatus.CONFLICT
+    ),
     DONBAOCAO_NOT_FOUND(1002,"Không tìm thấy đơn báo cáo", HttpStatus.NOT_FOUND),
     DONBAOCAO_IS_EXIST(1003,"Đơn báo cáo đã tồn tại", HttpStatus.CONFLICT),
     TRUCBANTACCHIEN_NOT_FOUND(1002,"Không tìm thấy thông tin người trực ban tác chiên", HttpStatus.NOT_FOUND),

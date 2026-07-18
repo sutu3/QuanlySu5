@@ -7,6 +7,8 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import org.example.quanlysu5.Enum.Status;
 
+import java.time.LocalDateTime;
+
 @Entity
 @SuperBuilder
 @Getter
@@ -43,6 +45,9 @@ public class CtDangCtEntity extends BaseEntity{
     @Column(columnDefinition = "TEXT COMMENT 'Kiến nghị kết quả'", nullable = false)
     String kienNghi;
 
+    @Column(name = "thoi_gian_bao_cao", columnDefinition = "DATETIME COMMENT 'thời gian báo cáo'")
+    LocalDateTime thoiGianBaoCao;
+
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(20) COMMENT 'Trạng thái của đơn báo cáo'", nullable = false)
     @NotNull(message = "Trạng thái không được null")
@@ -51,3 +56,4 @@ public class CtDangCtEntity extends BaseEntity{
     @JoinColumn(name = "maDonVi",nullable = false)
     DonViEntity donVi;
 }
+

@@ -9,6 +9,8 @@ import org.example.quanlysu5.Module.BaseEntity;
 import org.example.quanlysu5.Module.DonBaoCaoEntity;
 import org.example.quanlysu5.Module.DonViEntity;
 
+import java.time.LocalDateTime;
+
 @SuperBuilder
 @Data
 @NoArgsConstructor
@@ -27,6 +29,8 @@ public class CtDangCtRequest {
     String trucBanCtDangCt;
 
     String kienNghi;
+
+    LocalDateTime thoiGianBaoCao;
 
     String donVi;
 }

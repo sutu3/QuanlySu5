@@ -61,7 +61,7 @@ public class CtDangCtServiceImpl implements CtDangCtService {
                 continue;
             }
 
-                    ctDangCtRepo.findByDonVi_MaDonViAndCreatedAtBetweenAndStatus(
+                    ctDangCtRepo.findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndStatus(
                             donViCon.getMaDonVi(),
                             start,
                             end,Status.Đã_Duyệt).ifPresent(ctEntities::add);
@@ -83,7 +83,7 @@ public class CtDangCtServiceImpl implements CtDangCtService {
     public CtDangCtResponse create(CtDangCtRequest request,String idNguoiTao) {
         CtDangCtEntity ctDangCtEntity=ctDangCtMapper.toEntity(request);
         DonViEntity donViEntity=donViService.getById(request.getDonVi());
-        ctDangCtEntity.setCreatedAt(LocalDateTime.now());
+        ctDangCtEntity.setCreatedAt(request.getThoiGianBaoCao());
         ctDangCtEntity.setDonVi(donViEntity);
         ctDangCtEntity.setNguoiTao(idNguoiTao);
         ctDangCtEntity.setStatus(Status.Nháp);
@@ -132,7 +132,7 @@ public class CtDangCtServiceImpl implements CtDangCtService {
         if (!donviCon.isEmpty()) {
             donviCon.forEach(dv -> {
                 log.warn(dv.getMaDonVi());
-                ctDangCtRepo.findByDonVi_MaDonViAndCreatedAtBetweenAndStatus(
+                ctDangCtRepo.findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndStatus(
                         dv.getMaDonVi(),
                         start,
                         end,
@@ -150,14 +150,17 @@ public class CtDangCtServiceImpl implements CtDangCtService {
     public CtDangCtResponse getAllCtDangCtByDonVi(String idDonVi, LocalDate ngayLoc) {
         LocalDateTime start = ngayLoc.atStartOfDay();
         LocalDateTime end = ngayLoc.atTime(23, 59, 59);
-
+        log.warn("start: "+start);
+        log.warn("end: "+end);
+        log.warn(String.valueOf(ctDangCtRepo.findAllByDonVi_MaDonViAndThoiGianBaoCaoBetween(idDonVi,start,end).size()));
         CtDangCtEntity Reports =
-                ctDangCtRepo.findByDonVi_MaDonViAndCreatedAtBetween(idDonVi, start, end) ;
-        return ctDangCtMapper.toResponse(Reports);    }
+                ctDangCtRepo.findByDonVi_MaDonViAndThoiGianBaoCaoBetween(idDonVi, start, end);
+        return ctDangCtMapper.toResponse(Reports);
+    }
 
     @Override
     public List<CtDangCtResponse> getAllCtDangCtByDonViVaKhoangThoiGian(String idDonVi, LocalDate start, LocalDate end) {
-        List<CtDangCtEntity> ctDangCtEntity = ctDangCtRepo.findAllByDonVi_MaDonViAndCreatedAtBetween(idDonVi, start.atStartOfDay(), end.atTime(23, 59, 59));
+        List<CtDangCtEntity> ctDangCtEntity = ctDangCtRepo.findAllByDonVi_MaDonViAndThoiGianBaoCaoBetween(idDonVi, start.atStartOfDay(), end.atTime(23, 59, 59));
 
         return ctDangCtEntity.stream().map(ctDangCtMapper::toResponse).collect(Collectors.toList());
     }
@@ -168,7 +171,7 @@ public class CtDangCtServiceImpl implements CtDangCtService {
         LocalDateTime end = ngayLoc.atTime(23, 59, 59);
 
         CtDangCtEntity Reports =
-                ctDangCtRepo.findByDonVi_MaDonViAndCreatedAtBetweenAndStatus(idDonVi, start, end,Status.Đã_Duyệt)
+                ctDangCtRepo.findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndStatus(idDonVi, start, end,Status.Đã_Duyệt)
                         .orElseThrow(() -> new AppException(ErrorCode.CTDANGCT_NOT_FOUND));
         return ctDangCtMapper.toResponse(Reports);
     }
@@ -258,9 +261,14 @@ public class CtDangCtServiceImpl implements CtDangCtService {
                 .build();
         DonViEntity pct=donViService.getByKyHieuDonVi("pct");
         DonViEntity tb_f5=donViService.getByKyHieuDonVi("CH/f");
+        DonViEntity donVi = ctDangCtEntity.getDonVi();
+        DonViEntity donViCha = donVi.getDonViCha();
 
-        if(ctDangCtEntity.getDonVi().getDonViCha().getMaDonVi().matches("GS003")){
+        if ((donViCha != null && "GS003".equals(donViCha.getMaDonVi()))
+                || "GS003".equals(donVi.getMaDonVi())) {
+
             log.warn("hehehehee");
+
             myWebSocketHandler.sendToDonVi(pct.getMaDonVi(), jsonMessage, thongBaoRequest);
             myWebSocketHandler.sendToDonVi(tb_f5.getMaDonVi(), jsonMessage, thongBaoRequest);
         }

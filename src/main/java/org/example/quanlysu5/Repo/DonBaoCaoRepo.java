@@ -14,6 +14,8 @@ import java.util.Optional;
 
 public interface DonBaoCaoRepo extends JpaRepository<DonBaoCaoEntity,String>, JpaSpecificationExecutor<DonBaoCaoEntity> {
     List<DonBaoCaoEntity> findAllByIsDeleted(boolean isDeleted);
+    boolean existsByCaTruc_IdCatruc(String idCaTruc);
+
     Boolean existsByDonViAndThoiGianBaoCaoBetween(DonViEntity DonVi, LocalDateTime start,
                                                   LocalDateTime end);
     Optional<DonBaoCaoEntity> findByDonVi_MaDonViAndThoiGianBaoCaoBetween(
@@ -48,6 +50,7 @@ public interface DonBaoCaoRepo extends JpaRepository<DonBaoCaoEntity,String>, Jp
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
+
 
     @Query(value = """
     SELECT dbc.*

@@ -55,8 +55,6 @@ public class DonViServiceImpl implements DonViService {
 
     @Override
     public List<DonViResponse> toUnitsList() {
-        TaikhoanEntity taikhoan=taiKhoanRepo.findById(SecurityUtils.getClaim("sub"))
-                .orElseThrow(()->new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
         Specification<DonViEntity> specification = Specification.where(DonViSpecification.sortTheoCap()) ;
         return  DonViRepo.findAll(specification).stream()
                 .map(donViMapper::toResponse).collect(Collectors.toList());

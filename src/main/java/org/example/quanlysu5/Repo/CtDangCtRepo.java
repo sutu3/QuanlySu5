@@ -15,13 +15,14 @@ import java.util.Optional;
 public interface CtDangCtRepo extends JpaRepository<CtDangCtEntity,String> {
     Optional<CtDangCtEntity> findByDonVi_MaDonVi(
             String maDonVi);
-    Optional<CtDangCtEntity> findByDonVi_MaDonViAndCreatedAtBetweenAndStatus(
+    Optional<CtDangCtEntity> findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndStatus(
             String idDonVi,
             LocalDateTime start,
             LocalDateTime end,
             Status status
     );
-    List<CtDangCtEntity> findByCreatedAtBetween(
+
+    List<CtDangCtEntity> findByThoiGianBaoCaoBetween(
             LocalDateTime start,
             LocalDateTime end
     );
@@ -31,7 +32,7 @@ public interface CtDangCtRepo extends JpaRepository<CtDangCtEntity,String> {
     JOIN don_vi_entity dv
         ON ctdang.ma_don_vi = dv.ma_don_vi
     WHERE dv.ma_don_vi REGEXP CONCAT('^', :maDonViCha, '\\\\.[0-9]{3}$')
-      AND ctdang.created_at BETWEEN :start AND :end
+      AND ctdang.thoi_gian_bao_cao BETWEEN :start AND :end
       AND ctdang.status = 'Đã_Duyệt'
 """, nativeQuery = true)
     List<CtDangCtEntity> findAllCap2ByThoiGian(
@@ -39,12 +40,13 @@ public interface CtDangCtRepo extends JpaRepository<CtDangCtEntity,String> {
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
-    CtDangCtEntity findByDonVi_MaDonViAndCreatedAtBetween(
+    CtDangCtEntity findByDonVi_MaDonViAndThoiGianBaoCaoBetween(
             String idDonVi,
             LocalDateTime start,
             LocalDateTime end
     );
-    List<CtDangCtEntity> findAllByDonVi_MaDonViAndCreatedAtBetween(
+
+    List<CtDangCtEntity> findAllByDonVi_MaDonViAndThoiGianBaoCaoBetween(
             String idDonVi,
             LocalDateTime start,
             LocalDateTime end);

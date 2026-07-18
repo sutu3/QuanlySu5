@@ -109,7 +109,6 @@ public class KhungGioBaoCaoServiceImpl implements KhungGioBaoCaoService {
 
         KhungGioBaoCaoEntity entity =
                 khungGioBaoCaoMapper.toEntity(request);
-
         entity.setTenBaocao("Trực ban chỉ huy");
         entity.setLoaiBaoBan(LoaiBaoBan.CATRUC_CHIHUY);
         entity.setIsDeleted(false);
