@@ -29,9 +29,11 @@ import org.example.quanlysu5.Service.TrucBanTacChienService;
 import org.example.quanlysu5.Service.TrucChiHuyService;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -45,11 +47,31 @@ public class CaTrucServiceImpl implements CaTrucService {
     private final TrucBanTacChienRepo trucBanTacChienRepo;
     private final TrucChiHuyRepo trucChiHuyRepo;
     private final CaTrucRepo caTrucRepo;
+
     CaTrucMapper caTrucMapper;
     TrucChiHuyService trucChiHuyService;
     TrucBanTacChienService trucBanTacChienService;
     KhungGioBaoCaoRepo khungGioRepo;
     NhatKyService nhatKyService;
+
+    private static final SecureRandom RANDOM = new SecureRandom();
+
+    private static final List<String> DANH_SACH_TINH = List.of(
+            "An Giang", "Bắc Ninh", "Cà Mau", "Cao Bằng", "Đà Nẵng",
+            "Điện Biên", "Đồng Nai", "Đồng Tháp", "Gia Lai", "Hà Nội",
+            "Hà Tĩnh", "Hải Phòng", "Hưng Yên", "Khánh Hòa", "Lai Châu",
+            "Lâm Đồng", "Lạng Sơn", "Lào Cai", "Nghệ An", "Ninh Bình",
+            "Phú Thọ", "Quảng Ngãi", "Quảng Ninh", "Quảng Trị", "Sơn La",
+            "Tây Ninh", "Thái Nguyên", "Thanh Hóa", "Thành phố Hồ Chí Minh",
+            "Tuyên Quang", "Vĩnh Long", "Vĩnh Phúc", "Yên Bái", "Huế"
+    );
+
+    private String taoMatKhauTinh() {
+        List<String> ds = new ArrayList<>(DANH_SACH_TINH);
+        Collections.shuffle(ds);
+
+        return ds.get(0) + " - " + ds.get(1);
+    }
     @Override
     public List<CaTrucResponse> getAllCaTrucToResponse() {
         return caTrucRepo.findAllByIsDeleted(false).stream()
@@ -266,6 +288,35 @@ public class CaTrucServiceImpl implements CaTrucService {
     public CaTrucResponse getByNgayTruc(LocalDate ngayTruc) {
         CaTrucEntity caTruc=getByThoiGian(ngayTruc.atStartOfDay());
         return caTrucMapper.toResponse(caTruc);
+    }
+
+    @Override
+    public CaTrucEntity taoCaTrucTuDongChoNgay(LocalDate ngay) {
+        // Đã có ca trực ngày này -> KHÔNG đè, trả về ca trực hiện có
+        Optional<CaTrucEntity> existing = caTrucRepo.findByNgaytruc(ngay);
+        if (existing.isPresent()) {
+            return existing.get();
+        }
+
+        CaTrucEntity caTruc = new CaTrucEntity();
+        caTruc.setNgaytruc(ngay);
+        caTruc.setMatkhau(taoMatKhauTinh());
+        caTruc.setGhichu("");
+        caTruc.setIsDeleted(false);
+        // trucChiHuy / trucBanTacChien để null, phân công thủ công sau
+
+        CaTrucEntity saved = caTrucRepo.save(caTruc);
+
+        nhatKyService.createNhatKy(NhatKyRequest.builder()
+                .doiTuong(DoiTuongNhatKy.CA_TRUC)
+                .hanhDong(HanhDongNhatKy.CREATE)
+                .doiTuongId(saved.getIdCatruc())
+                .taiKhoan("SYSTEM")
+                .trangThai(TrangThaiNhatKy.THANH_CONG)
+                .moTa("Hệ thống tự tạo ca trực ngày " + ngay)
+                .build());
+
+        return saved;
     }
 
     private CaTrucEntity taoHoacCapNhatCaTruc(

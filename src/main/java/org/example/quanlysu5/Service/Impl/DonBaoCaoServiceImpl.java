@@ -64,7 +64,8 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
     public DonBaoCaoResponse createDonBaoCaoQuanSoNgay(DonBaoCaoRequest request, String idNguoiTao) {
 
         DonBaoCaoEntity DonBaoCaoEntity = DonBaoCaoMapper.toEntity(request);
-        CaTrucEntity caTruc = caTrucService.getByThoiGian(request.getThoiGianBaoCao());
+        CaTrucEntity caTruc = caTrucService.taoCaTrucTuDongChoNgay(
+                request.getThoiGianBaoCao().toLocalDate());
         DonBaoCaoEntity.setCaTruc(caTruc);
         DonBaoCaoEntity.setCreatedAt(LocalDateTime.now());
         DonBaoCaoEntity.setIsDeleted(false);

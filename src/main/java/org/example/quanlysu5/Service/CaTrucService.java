@@ -34,4 +34,7 @@ public interface CaTrucService {
 
     CaTrucResponse getByNgayTruc(LocalDate ngayTruc);
 
+    CaTrucEntity taoCaTrucTuDongChoNgay(LocalDate ngay);
+
+
 }
