@@ -6,9 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
+import org.example.quanlysu5.Enum.CapDonVi;
 
 import java.time.LocalTime;
-import java.util.Date;
 
 @SuperBuilder
 @Data
@@ -17,6 +17,7 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class KhungGioBaoCaoRequest {
     Integer soNgayTruc;
+    CapDonVi capDonVi;
     LocalTime khunggioBatdau;
     LocalTime khunggioKetthuc;
 }

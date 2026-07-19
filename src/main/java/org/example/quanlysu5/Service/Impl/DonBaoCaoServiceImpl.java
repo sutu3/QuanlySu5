@@ -19,12 +19,14 @@ import org.example.quanlysu5.Mapper.DonBaoCaoMapper;
 import org.example.quanlysu5.Module.CaTrucEntity;
 import org.example.quanlysu5.Module.DonBaoCaoEntity;
 import org.example.quanlysu5.Module.DonViEntity;
+import org.example.quanlysu5.Module.KhungGioBaoCaoEntity;
 import org.example.quanlysu5.Repo.DonBaoCaoRepo;
 import org.example.quanlysu5.Service.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +44,7 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
     MyWebSocketHandler myWebSocketHandler;
     NhatKyService nhatKyService;
     ThongBaoService thongBaoService;
-
+    KhungGioBaoCaoService khungGioBaoCaoService;
     @Override
     public List<DonBaoCaoResponse> getAllDonBaoCaoToResponse() {
         return DonBaoCaoRepo.findAllByIsDeleted(false).stream()
@@ -72,6 +74,13 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
         DonBaoCaoEntity.setNguoiTao(idNguoiTao);
         DonBaoCaoEntity.setThoiGianBaoCao(request.getThoiGianBaoCao());
         DonViEntity donViEntity = donViService.getById(request.getDonVi());
+        KhungGioBaoCaoEntity khungGio =
+                khungGioBaoCaoService.getKhungGioBanNgayTheoCap(donViEntity.getCapDonVi());
+        LocalTime gioBaoCao = request.getThoiGianBaoCao().toLocalTime();
+        if (gioBaoCao.isBefore(khungGio.getKhunggioBatdau())
+                || gioBaoCao.isAfter(khungGio.getKhunggioKetthuc())) {
+            throw new AppException(ErrorCode.BAOCAO_NGOAI_KHUNG_GIO);
+        }
         DonBaoCaoEntity.setStatus(Status.Nháp);
         DonBaoCaoEntity.setDonVi(donViEntity);
         DonBaoCaoEntity = DonBaoCaoRepo.save(DonBaoCaoEntity);
@@ -204,7 +213,7 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
     public DonBaoCaoResponse updateStatusWaitingApprove(String idDonBaoCao) {
         DonBaoCaoEntity donBaoCaoEntity = getByIdDonBaoCao(idDonBaoCao);
         if ((donBaoCaoEntity.getDonVi().getCapDonVi().equals(CapDonVi.TIEU_DOAN) && !donBaoCaoEntity.getDonVi().getKyhieuDonvi().matches("dbộ"))
-                || (donBaoCaoEntity.getDonVi().getCapDonVi().equals(CapDonVi.TRUNG_DOAN) && !donBaoCaoEntity.getDonVi().getKyhieuDonvi().matches("ebộ"))) {
+                || (donBaoCaoEntity.getDonVi().getCapDonVi().equals(CapDonVi.TRUNG_DOAN) && !donBaoCaoEntity.getDonVi().getKyhieuDonvi().matches("CH/e"))) {
             nhatKyService.createNhatKy(NhatKyRequest.builder()
                     .doiTuong(DoiTuongNhatKy.BAO_CAO)
                     .hanhDong(HanhDongNhatKy.UPDATE)

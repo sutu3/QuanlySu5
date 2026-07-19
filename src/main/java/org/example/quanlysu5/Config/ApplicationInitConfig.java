@@ -33,13 +33,11 @@ import org.example.quanlysu5.Enum.LoaiBaoBan;
 import org.example.quanlysu5.Exception.AppException;
 import org.example.quanlysu5.Exception.ErrorCode;
 import org.example.quanlysu5.Hepler.DataInitializer;
-import org.example.quanlysu5.Module.DonViEntity;
-import org.example.quanlysu5.Module.KhungGioBaoCaoEntity;
-import org.example.quanlysu5.Module.TaikhoanEntity;
-import org.example.quanlysu5.Module.VaiTroEntity;
+import org.example.quanlysu5.Module.*;
 import org.example.quanlysu5.Repo.DonViRepo;
 import org.example.quanlysu5.Repo.TaiKhoanRepo;
 import org.example.quanlysu5.Repo.VaiTroRepo;
+import org.example.quanlysu5.Service.CaTrucService;
 import org.example.quanlysu5.Service.DonViService;
 import org.example.quanlysu5.Service.KhungGioBaoCaoService;
 import org.example.quanlysu5.Service.VaiTroService;
@@ -48,6 +46,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
@@ -62,12 +61,23 @@ public class ApplicationInitConfig {
 
     @Bean
     ApplicationRunner applicationRunner(TaiKhoanRepo taiKhoanRepository, VaiTroRepo vaiTroRepository, TaiKhoanRepo taiKhoanRepo,
-                                        DonViRepo donViRepo, DonViService donViService, KhungGioBaoCaoService khungGioBaoCaoService, VaiTroService vaiTroService, DataInitializer dataInitializer) {
+                                        DonViRepo donViRepo, CaTrucService caTrucService, DonViService donViService, KhungGioBaoCaoService khungGioBaoCaoService, VaiTroService vaiTroService, DataInitializer dataInitializer) {
         return args -> {
+            LocalDate today = LocalDate.now();
+            caTrucService.taoCaTrucTuDongChoNgay(today);
+
 
             // Initial data setup
             if (taiKhoanRepository.findByTenDangNhapIgnoreCase("admin").isEmpty()) {
-
+                for (CapDonVi cap : CapDonVi.values()) {
+                    KhungGioBaoCaoRequest khungGioBaoBanNgay = KhungGioBaoCaoRequest.builder()
+                            .capDonVi(cap)
+                            .khunggioBatdau(LocalTime.parse("06:30:00"))
+                            .khunggioKetthuc(LocalTime.parse("21:30:00"))
+                            .soNgayTruc(1)
+                            .build();
+                    khungGioBaoCaoService.createKhungGioBanNgay(khungGioBaoBanNgay);
+                }
                 VaiTroEntity vaiTro =
                         vaiTroRepository.findByTenVaiTro("Quản Trị Viên")
                                 .orElseGet(() -> {
@@ -95,6 +105,9 @@ public class ApplicationInitConfig {
                         .build();
                 khungGioBaoCaoService.createKhungGioBanChiHuy(khungGioBaoCaoTrucChiHuy);
                 khungGioBaoCaoService.createKhungGioBanTacChien(khungGioBaoCaoTrucBanTacChien);
+
+                // Seed khung giờ báo ban ngày cho TỪNG cấp đơn vị (khung giờ mẫu 06:30 - 07:30)
+
 
 
                 TaikhoanEntity user = TaikhoanEntity.builder()

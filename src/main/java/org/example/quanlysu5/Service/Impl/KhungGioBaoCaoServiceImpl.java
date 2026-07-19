@@ -7,17 +7,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.quanlysu5.Dto.Request.KhungGioBaoCaoRequest;
 import org.example.quanlysu5.Dto.Request.NhatKyRequest;
 import org.example.quanlysu5.Dto.Response.KhungGioBaoCaoResponse;
-import org.example.quanlysu5.Enum.DoiTuongNhatKy;
-import org.example.quanlysu5.Enum.HanhDongNhatKy;
-import org.example.quanlysu5.Enum.LoaiBaoBan;
-import org.example.quanlysu5.Enum.TrangThaiNhatKy;
+import org.example.quanlysu5.Enum.*;
 import org.example.quanlysu5.Exception.AppException;
 import org.example.quanlysu5.Exception.ErrorCode;
 import org.example.quanlysu5.Form.KhungGioBaoCaoForm;
 import org.example.quanlysu5.Hepler.SecurityUtils;
 import org.example.quanlysu5.Mapper.KhungGioBaoCaoMapper;
 import org.example.quanlysu5.Module.KhungGioBaoCaoEntity;
+import org.example.quanlysu5.Module.TaikhoanEntity;
 import org.example.quanlysu5.Repo.KhungGioBaoCaoRepo;
+import org.example.quanlysu5.Repo.TaiKhoanRepo;
 import org.example.quanlysu5.Service.KhungGioBaoCaoService;
 import org.example.quanlysu5.Service.NhatKyService;
 import org.springframework.stereotype.Service;
@@ -30,10 +29,12 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class KhungGioBaoCaoServiceImpl implements KhungGioBaoCaoService {
+    private final TaiKhoanRepo taiKhoanRepo;
 
     KhungGioBaoCaoRepo khungGioBaoCaoRepo;
     KhungGioBaoCaoMapper khungGioBaoCaoMapper;
     NhatKyService nhatKyService;
+    TaiKhoanServiceImpl taiKhoanService;
 
     @Override
     public List<KhungGioBaoCaoResponse> getAllKhungGioBaoCao() {
@@ -156,10 +157,17 @@ public class KhungGioBaoCaoServiceImpl implements KhungGioBaoCaoService {
            }
 
     @Override
+    public KhungGioBaoCaoResponse getKhungGioBanNgay() {
+        return khungGioBaoCaoMapper.toResponse(khungGioBaoCaoRepo.findByLoaiBaoBan(
+                LoaiBaoBan.BAOBAN_NGAY).orElseThrow(
+                ()->new AppException(ErrorCode.KHUNGGIOBAOCAO_NOT_FOUND)));
+    }
+
+    @Override
     public KhungGioBaoCaoResponse createKhungGioBanNgay(KhungGioBaoCaoRequest request) {
         KhungGioBaoCaoEntity khungGioBaoCao =
                 khungGioBaoCaoRepo
-                        .findByLoaiBaoBan(LoaiBaoBan.BAOBAN_NGAY)
+                        .findByLoaiBaoBanAndCapDonVi(LoaiBaoBan.BAOBAN_NGAY, request.getCapDonVi())
                         .orElse(null);
 
         if (khungGioBaoCao != null) {
@@ -176,15 +184,18 @@ public class KhungGioBaoCaoServiceImpl implements KhungGioBaoCaoService {
         KhungGioBaoCaoEntity entity =
                 khungGioBaoCaoMapper.toEntity(request);
 
-        entity.setTenBaocao("Báo ban ngày");
+        entity.setTenBaocao("Báo ban ngày - " + request.getCapDonVi());
         entity.setLoaiBaoBan(LoaiBaoBan.BAOBAN_NGAY);
+        entity.setCapDonVi(request.getCapDonVi());
         entity.setIsDeleted(false);
         khungGioBaoCaoRepo.save(entity);
+        TaikhoanEntity taikhoan=taiKhoanRepo.findByTenDangNhapIgnoreCase("admin")
+                .orElseThrow(()->new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
         nhatKyService.createNhatKy(NhatKyRequest.builder()
                 .doiTuong(DoiTuongNhatKy.KHUNG_GIO)
                 .hanhDong(HanhDongNhatKy.CREATE)
                 .doiTuongId(entity.getIdKhunggio())
-                .taiKhoan(SecurityUtils.getClaim("sub"))
+                .taiKhoan(taikhoan.getIdTaiKhoan())
                 .trangThai(TrangThaiNhatKy.THANH_CONG)
                 .moTa("Tài khoản " + SecurityUtils.getUsername() + "tạo thông tin khung giờ ")
                 .build());
@@ -193,10 +204,10 @@ public class KhungGioBaoCaoServiceImpl implements KhungGioBaoCaoService {
     }
 
     @Override
-    public KhungGioBaoCaoResponse getKhungGioBanNgay() {
-        return khungGioBaoCaoMapper.toResponse(khungGioBaoCaoRepo.findByLoaiBaoBan(
-                LoaiBaoBan.BAOBAN_NGAY).orElseThrow(
-                ()->new AppException(ErrorCode.KHUNGGIOBAOCAO_NOT_FOUND)));
+    public KhungGioBaoCaoEntity getKhungGioBanNgayTheoCap(CapDonVi cap) {
+        return khungGioBaoCaoRepo
+                .findByLoaiBaoBanAndCapDonVi(LoaiBaoBan.BAOBAN_NGAY, cap)
+                .orElseThrow(() -> new AppException(ErrorCode.KHUNGGIOBAOCAO_NOT_FOUND));
     }
 
     @Override

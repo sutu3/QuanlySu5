@@ -5,10 +5,10 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
+import org.example.quanlysu5.Enum.CapDonVi;
 import org.example.quanlysu5.Enum.LoaiBaoBan;
 
 import java.time.LocalTime;
-import java.util.Date;
 
 @Entity
 @SuperBuilder
@@ -33,6 +33,11 @@ public class KhungGioBaoCaoEntity extends BaseEntity {
     @Column(columnDefinition = "VARCHAR(20) COMMENT 'Loại báo ban'", nullable = false)
     @NotNull(message = "Loại báo ban không được null")
     LoaiBaoBan loaiBaoBan;
+
+    // Cấp đơn vị áp dụng khung giờ này (null = áp dụng chung, vd trực chỉ huy/tác chiến)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "cap_don_vi", columnDefinition = "VARCHAR(30) COMMENT 'Cấp đơn vị áp dụng'")
+    CapDonVi capDonVi;
 
     @Column(columnDefinition = "TIME COMMENT 'Khung giờ bắt đầu'", nullable = false)
     LocalTime khunggioBatdau;

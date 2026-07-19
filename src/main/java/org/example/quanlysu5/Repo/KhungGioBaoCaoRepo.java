@@ -1,5 +1,6 @@
 package org.example.quanlysu5.Repo;
 
+import org.example.quanlysu5.Enum.CapDonVi;
 import org.example.quanlysu5.Enum.LoaiBaoBan;
 import org.example.quanlysu5.Module.KhungGioBaoCaoEntity;
 import org.springframework.data.domain.Page;
@@ -17,8 +18,8 @@ public interface KhungGioBaoCaoRepo extends JpaRepository<KhungGioBaoCaoEntity, 
 
     Optional<KhungGioBaoCaoEntity> findByLoaiBaoBan(LoaiBaoBan s);
     boolean existsByLoaiBaoBan(LoaiBaoBan s);
-    //    List<KhungGioBaoCaoEntity> findByKhungGioBaoCao(KhungGioBaoCaoEntity KhungGioBaoCaoCha);
-//    List<KhungGioBaoCaoEntity> findByKhungGioBaoCaoIsNull();
-    //Page<UnitsEntity> findAllbyPage(Boolean isDeleted, Pageable pageable);
+
+    Optional<KhungGioBaoCaoEntity> findByLoaiBaoBanAndCapDonVi(LoaiBaoBan loai, CapDonVi cap);
+    boolean existsByLoaiBaoBanAndCapDonVi(LoaiBaoBan loai, CapDonVi cap);
 
 }

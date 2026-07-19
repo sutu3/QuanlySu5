@@ -38,6 +38,7 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
     DONBAOCAO_NOT_FOUND(1002,"Không tìm thấy đơn báo cáo", HttpStatus.NOT_FOUND),
+    BAOCAO_NGOAI_KHUNG_GIO(1006,"Ngoài khung giờ báo ban cho phép của cấp đơn vị này", HttpStatus.BAD_REQUEST),
     DONBAOCAO_IS_EXIST(1003,"Đơn báo cáo đã tồn tại", HttpStatus.CONFLICT),
     TRUCBANTACCHIEN_NOT_FOUND(1002,"Không tìm thấy thông tin người trực ban tác chiên", HttpStatus.NOT_FOUND),
     TRUCBANTACCHIEN_IS_EXIST(1003,"Trùng thông tin người trực khác", HttpStatus.CONFLICT),

@@ -2,6 +2,7 @@ package org.example.quanlysu5.Service;
 
 import org.example.quanlysu5.Dto.Request.KhungGioBaoCaoRequest;
 import org.example.quanlysu5.Dto.Response.KhungGioBaoCaoResponse;
+import org.example.quanlysu5.Enum.CapDonVi;
 import org.example.quanlysu5.Form.KhungGioBaoCaoForm;
 import org.example.quanlysu5.Module.KhungGioBaoCaoEntity;
 
@@ -24,6 +25,9 @@ public interface KhungGioBaoCaoService {
     KhungGioBaoCaoResponse createKhungGioBanNgay(KhungGioBaoCaoRequest request);
 
     KhungGioBaoCaoResponse getKhungGioBanNgay();
+
+    // Lấy entity khung giờ báo ban ngày theo cấp đơn vị
+    KhungGioBaoCaoEntity getKhungGioBanNgayTheoCap(CapDonVi cap);
 
     KhungGioBaoCaoResponse updateKhungGio(String idKhunggio,
                                           KhungGioBaoCaoForm update);
