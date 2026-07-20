@@ -117,6 +117,7 @@ public class DonViServiceImpl implements DonViService {
         DonViEntity donVi=getById(idDonVi);
         donViMapper.update(donVi,update);
         donVi.setUpdatedAt(LocalDateTime.now());
+        donVi.setKyhieuDonvi(update.getKyhieuDonvi());
         DonViRepo.save(donVi);
         nhatKyService.createNhatKy(NhatKyRequest.builder()
                 .doiTuong(DoiTuongNhatKy.DON_VI)

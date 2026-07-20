@@ -2,6 +2,7 @@ package org.example.quanlysu5.Mapper;
 
 import org.example.quanlysu5.Dto.Request.DonviRequest;
 import org.example.quanlysu5.Dto.Response.DonVi.DonViResponse;
+import org.example.quanlysu5.Enum.CapDonVi;
 import org.example.quanlysu5.Form.DonviForm;
 import org.example.quanlysu5.Module.DonViEntity;
 import org.mapstruct.AfterMapping;
@@ -30,7 +31,7 @@ public interface DonViMapper {
     default void formatKyHieu(DonViEntity entity,
                               @MappingTarget DonViResponse response) {
 
-        if (entity.getKyhieuDonvi() != null) {
+        if (entity.getKyhieuDonvi() != null&&(entity.getCapDonVi()!= CapDonVi.BAN||entity.getCapDonVi()!=CapDonVi.PHONG)) {
             response.setKyhieuDonvi(entity.getKyhieuDonvi().split("-")[0]);
         }
     }

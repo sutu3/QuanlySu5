@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import org.example.quanlysu5.Dto.Response.DonVi.DonViNoList;
 import org.example.quanlysu5.Dto.Response.DonVi.DonViResponse;
+import org.example.quanlysu5.Enum.LoaiDonBaoCao;
 import org.example.quanlysu5.Enum.Status;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,8 @@ public class CtDangCtResponse {
     String tinhHinh;
 
     String noiDungDotXuat;
+
+    LoaiDonBaoCao loaiDonBaoCao;
 
     String ketQua;
 

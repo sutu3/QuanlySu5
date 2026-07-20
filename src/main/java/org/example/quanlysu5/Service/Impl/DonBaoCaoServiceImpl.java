@@ -65,6 +65,20 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
     @Override
     public DonBaoCaoResponse createDonBaoCaoQuanSoNgay(DonBaoCaoRequest request, String idNguoiTao) {
 
+        DonViEntity donViEntity = donViService.getById(request.getDonVi());
+
+        // Mặc định là báo cáo của chính đơn vị nếu không truyền loại
+        LoaiDonBaoCao loai = request.getLoaiDonBaoCao() != null
+                ? request.getLoaiDonBaoCao()
+                : LoaiDonBaoCao.DON_VI;
+
+        // Chỉ đơn vị cấp Trung đoàn mới được tạo báo cáo TONG_HOP
+        if (loai == LoaiDonBaoCao.TONG_HOP
+                && donViEntity.getCapDonVi() != CapDonVi.TRUNG_DOAN
+                && donViEntity.getCapDonVi() != CapDonVi.TIEU_DOAN) {
+            throw new AppException(ErrorCode.BAOCAO_TONGHOP_KHONG_HOP_LE);
+        }
+
         DonBaoCaoEntity DonBaoCaoEntity = DonBaoCaoMapper.toEntity(request);
         CaTrucEntity caTruc = caTrucService.taoCaTrucTuDongChoNgay(
                 request.getThoiGianBaoCao().toLocalDate());
@@ -73,7 +87,8 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
         DonBaoCaoEntity.setIsDeleted(false);
         DonBaoCaoEntity.setNguoiTao(idNguoiTao);
         DonBaoCaoEntity.setThoiGianBaoCao(request.getThoiGianBaoCao());
-        DonViEntity donViEntity = donViService.getById(request.getDonVi());
+        DonBaoCaoEntity.setLoaiDonBaoCao(loai);
+
         KhungGioBaoCaoEntity khungGio =
                 khungGioBaoCaoService.getKhungGioBanNgayTheoCap(donViEntity.getCapDonVi());
         LocalTime gioBaoCao = request.getThoiGianBaoCao().toLocalTime();
@@ -94,9 +109,8 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
                 .build());
         return DonBaoCaoMapper.toResponse(DonBaoCaoEntity);
     }
-
     @Override
-    public List<DonBaoCaoResponse> getAllDonBaoCaoDonViConByDonVi(String idDonVi, LocalDate ngayLoc) {
+    public List<DonBaoCaoResponse> getAllDonBaoCaoDonViConByDonVi(String idDonVi, LocalDate ngayLoc,String loaiBaoBan) {
 
         DonViEntity donViEntity = donViService.getById(idDonVi);
 
@@ -110,11 +124,12 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
         if (!donviCon.isEmpty()) {
             donviCon.forEach(dv -> {
                 log.warn(dv.getMaDonVi());
-                DonBaoCaoRepo.findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndStatus(
+                DonBaoCaoRepo.findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndStatusAndLoaiDonBaoCao(
                         dv.getMaDonVi(),
                         start,
                         end,
-                        Status.Đã_Duyệt
+                        Status.Đã_Duyệt,
+                        LoaiDonBaoCao.valueOf(loaiBaoBan)
                 ).ifPresent(donBaoCaoEntities::add);
             });
         }
@@ -125,12 +140,13 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
     }
 
     @Override
-    public DonBaoCaoResponse getAllDonBaoCaoByDonVi(String idDonVi, LocalDate ngayLoc) {
+    public DonBaoCaoResponse getAllDonBaoCaoByDonVi(String idDonVi, LocalDate ngayLoc,String loaiBaoBan) {
         LocalDateTime start = ngayLoc.atStartOfDay();
         LocalDateTime end = ngayLoc.atTime(23, 59, 59);
 
         DonBaoCaoEntity Reports =
-                DonBaoCaoRepo.findByDonVi_MaDonViAndThoiGianBaoCaoBetween(idDonVi, start, end)
+                DonBaoCaoRepo.findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndLoaiDonBaoCao(
+                                idDonVi, start, end,LoaiDonBaoCao.valueOf(loaiBaoBan))
                         .orElseThrow(() -> new AppException(ErrorCode.DONBAOCAO_NOT_FOUND));
         return DonBaoCaoMapper.toResponse(Reports);
     }
@@ -146,10 +162,11 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
     @Override
     public DonBaoCaoResponse getAllDonBaoCaoByDonViApprove(
             String idDonVi,
-            LocalDate ngayLoc) {
+            LocalDate ngayLoc,
+            String loaiBaoBan) {
 
         DonBaoCaoResponse donBaoCaoResponse =
-                getAllDonBaoCaoByDonVi(idDonVi, ngayLoc);
+                getAllDonBaoCaoByDonVi(idDonVi, ngayLoc,loaiBaoBan);
 
         return donBaoCaoResponse != null
                 && donBaoCaoResponse.getStatus() == Status.Đã_Duyệt
@@ -212,8 +229,7 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
     @Override
     public DonBaoCaoResponse updateStatusWaitingApprove(String idDonBaoCao) {
         DonBaoCaoEntity donBaoCaoEntity = getByIdDonBaoCao(idDonBaoCao);
-        if ((donBaoCaoEntity.getDonVi().getCapDonVi().equals(CapDonVi.TIEU_DOAN) && !donBaoCaoEntity.getDonVi().getKyhieuDonvi().matches("dbộ"))
-                || (donBaoCaoEntity.getDonVi().getCapDonVi().equals(CapDonVi.TRUNG_DOAN) && !donBaoCaoEntity.getDonVi().getKyhieuDonvi().matches("CH/e"))) {
+        if (donBaoCaoEntity.getLoaiDonBaoCao()==LoaiDonBaoCao.TONG_HOP) {
             nhatKyService.createNhatKy(NhatKyRequest.builder()
                     .doiTuong(DoiTuongNhatKy.BAO_CAO)
                     .hanhDong(HanhDongNhatKy.UPDATE)

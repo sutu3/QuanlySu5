@@ -20,13 +20,13 @@ public interface DonBaoCaoService {
 
     DonBaoCaoResponse createDonBaoCaoQuanSoNgay(DonBaoCaoRequest DonBaoCaoRequest, String idNguoiTao);
 
-    List<DonBaoCaoResponse> getAllDonBaoCaoDonViConByDonVi(String idDonVi, LocalDate ngayLoc);
+    List<DonBaoCaoResponse> getAllDonBaoCaoDonViConByDonVi(String idDonVi, LocalDate ngayLoc,String loaiBaoBan);
 
-    DonBaoCaoResponse getAllDonBaoCaoByDonVi(String idDonVi, LocalDate ngayLoc);
+    DonBaoCaoResponse getAllDonBaoCaoByDonVi(String idDonVi, LocalDate ngayLoc,String loaiBaoBan);
 
     List<DonBaoCaoResponse> getAllDonBaoCaoByDonViVaKhoangThoiGian(String idDonVi, LocalDate start, LocalDate end);
 
-    DonBaoCaoResponse getAllDonBaoCaoByDonViApprove(String idDonVi, LocalDate ngayLoc);
+    DonBaoCaoResponse getAllDonBaoCaoByDonViApprove(String idDonVi, LocalDate ngayLoc,String loaiBaoBan);
 
     DonBaoCaoResponse updateStatusApprove(String idDonBaoCao);
 

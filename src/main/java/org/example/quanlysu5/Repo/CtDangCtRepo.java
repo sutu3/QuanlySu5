@@ -1,5 +1,6 @@
 package org.example.quanlysu5.Repo;
 
+import org.example.quanlysu5.Enum.LoaiDonBaoCao;
 import org.example.quanlysu5.Enum.Status;
 import org.example.quanlysu5.Module.CtDangCtEntity;
 import org.example.quanlysu5.Module.DonBaoCaoEntity;
@@ -13,6 +14,21 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CtDangCtRepo extends JpaRepository<CtDangCtEntity,String> {
+    Optional<CtDangCtEntity> findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndLoaiDonBaoCao(
+            String idDonVi,
+            LocalDateTime start,
+            LocalDateTime end,
+            LoaiDonBaoCao loaiDonBaoCao
+    );
+
+    Optional<CtDangCtEntity> findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndStatusAndLoaiDonBaoCao(
+            String idDonVi,
+            LocalDateTime start,
+            LocalDateTime end,
+            Status status,
+            LoaiDonBaoCao loaiDonBaoCao
+    );
+
     Optional<CtDangCtEntity> findByDonVi_MaDonVi(
             String maDonVi);
     Optional<CtDangCtEntity> findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndStatus(

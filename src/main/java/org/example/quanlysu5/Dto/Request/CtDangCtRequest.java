@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import org.example.quanlysu5.Dto.Response.DonVi.DonViResponse;
+import org.example.quanlysu5.Enum.LoaiDonBaoCao;
 import org.example.quanlysu5.Module.BaseEntity;
 import org.example.quanlysu5.Module.DonBaoCaoEntity;
 import org.example.quanlysu5.Module.DonViEntity;
@@ -25,6 +26,8 @@ public class CtDangCtRequest {
     String ketQua;
 
     String trucBanNoiVu;
+
+    LoaiDonBaoCao loaiDonBaoCao;
 
     String trucBanCtDangCt;
 

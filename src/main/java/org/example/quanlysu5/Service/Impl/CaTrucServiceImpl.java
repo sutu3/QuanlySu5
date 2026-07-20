@@ -20,6 +20,7 @@ import org.example.quanlysu5.Form.CaTrucForm;
 import org.example.quanlysu5.Hepler.SecurityUtils;
 import org.example.quanlysu5.Mapper.CaTrucMapper;
 import org.example.quanlysu5.Module.CaTrucEntity;
+import org.example.quanlysu5.Module.TaikhoanEntity;
 import org.example.quanlysu5.Module.TrucBanTacChienEntity;
 import org.example.quanlysu5.Module.TrucChiHuyEntity;
 import org.example.quanlysu5.Repo.*;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class CaTrucServiceImpl implements CaTrucService {
+    private final TaiKhoanRepo taiKhoanRepo;
     private final DonBaoCaoRepo donBaoCaoRepo;
     private final TrucBanTacChienRepo trucBanTacChienRepo;
     private final TrucChiHuyRepo trucChiHuyRepo;
@@ -297,6 +299,8 @@ public class CaTrucServiceImpl implements CaTrucService {
         if (existing.isPresent()) {
             return existing.get();
         }
+        TaikhoanEntity tkentity=taiKhoanRepo.findByTenDangNhapIgnoreCase("admin")
+                .orElseThrow(()->new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         CaTrucEntity caTruc = new CaTrucEntity();
         caTruc.setNgaytruc(ngay);
@@ -311,7 +315,7 @@ public class CaTrucServiceImpl implements CaTrucService {
                 .doiTuong(DoiTuongNhatKy.CA_TRUC)
                 .hanhDong(HanhDongNhatKy.CREATE)
                 .doiTuongId(saved.getIdCatruc())
-                .taiKhoan("SYSTEM")
+                .taiKhoan(tkentity.getIdTaiKhoan())
                 .trangThai(TrangThaiNhatKy.THANH_CONG)
                 .moTa("Hệ thống tự tạo ca trực ngày " + ngay)
                 .build());

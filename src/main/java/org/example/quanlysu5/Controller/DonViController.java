@@ -66,7 +66,7 @@ public class DonViController {
 
         return ApiResponse.<DonViResponse>builder()
                 .Result(donViService.updateDonVi(id,update))
-                .message("Tạo đơn vị thành công")
+                .message("Cập nhập đơn vị thành công")
                 .success(true)
                 .code(0)
                 .build();

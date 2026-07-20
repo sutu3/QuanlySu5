@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
+import org.example.quanlysu5.Enum.LoaiDonBaoCao;
 import org.example.quanlysu5.Enum.Status;
 
 import java.time.LocalDateTime;
@@ -30,6 +31,10 @@ public class DonBaoCaoEntity extends BaseEntity{
 
     @Column(name = "quan_so_vang",columnDefinition = "INTEGER COMMENT 'tổng vắng'")
     Integer quanSoVang;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "loai_don_bao_cao", columnDefinition = "VARCHAR(20) COMMENT 'Loại báo cáo: DON_VI hoặc TONG_HOP'")
+    LoaiDonBaoCao loaiDonBaoCao;
 
     @Column(name = "thoi_gian_bao_cao", columnDefinition = "DATETIME COMMENT 'thời gian báo cáo'")
     LocalDateTime thoiGianBaoCao;

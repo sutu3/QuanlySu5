@@ -8,7 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.quanlysu5.Dto.ApiResponse;
 import org.example.quanlysu5.Dto.Request.DonBaoCaoRequest;
 import org.example.quanlysu5.Dto.Request.GhiChuRequest;
+import org.example.quanlysu5.Dto.Request.LoaiBaoCaoRequest;
 import org.example.quanlysu5.Dto.Response.DonBaoCao.DonBaoCaoResponse;
+import org.example.quanlysu5.Enum.LoaiDonBaoCao;
 import org.example.quanlysu5.Form.DonBaoCaoForm;
 import org.example.quanlysu5.Service.DonBaoCaoService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -55,12 +57,13 @@ public class DonBaoCaoController {
     @GetMapping("/search/DonVi/{idDonVi}/children")
     public ApiResponse<List<DonBaoCaoResponse>> getDonBaoCaoDonViConById(
             @PathVariable String idDonVi,
+            @RequestParam(required = false) LoaiDonBaoCao loaiDonBaoCao,
             @RequestParam
             @DateTimeFormat(pattern = "dd/MM/yyyy")
             LocalDate ngayLoc) {
 
         return ApiResponse.<List<DonBaoCaoResponse>>builder()
-                .Result(donBaoCaoService.getAllDonBaoCaoDonViConByDonVi(idDonVi,ngayLoc))
+                .Result(donBaoCaoService.getAllDonBaoCaoDonViConByDonVi(idDonVi,ngayLoc,loaiDonBaoCao.toString() ))
                 .message("Lấy danh sách báo cáo đơn vị con thành công")
                 .success(true)
                 .code(0)
@@ -69,12 +72,13 @@ public class DonBaoCaoController {
     @GetMapping("/search/DonVi/{idDonVi}")
     public ApiResponse<DonBaoCaoResponse> getDonBaoCaoById(
             @PathVariable String idDonVi,
+            @RequestParam(required = false) LoaiDonBaoCao loaiDonBaoCao,
             @RequestParam
             @DateTimeFormat(pattern = "dd/MM/yyyy")
             LocalDate ngayLoc) {
 
         return ApiResponse.<DonBaoCaoResponse>builder()
-                .Result(donBaoCaoService.getAllDonBaoCaoByDonVi(idDonVi,ngayLoc))
+                .Result(donBaoCaoService.getAllDonBaoCaoByDonVi(idDonVi,ngayLoc,loaiDonBaoCao.toString() ))
                 .message("Lấy thông tin đơn báo cáo thành công")
                 .success(true)
                 .code(0)
@@ -125,12 +129,13 @@ public class DonBaoCaoController {
     @GetMapping("/search/DonVi/{idDonVi}/Status/Approvel")
     public ApiResponse<DonBaoCaoResponse> getDonBaoCaoByIdApprove(
             @PathVariable String idDonVi,
+            @RequestParam(required = false) LoaiDonBaoCao loaiDonBaoCao,
             @RequestParam
             @DateTimeFormat(pattern = "dd/MM/yyyy")
             LocalDate ngayLoc) {
 
         return ApiResponse.<DonBaoCaoResponse>builder()
-                .Result(donBaoCaoService.getAllDonBaoCaoByDonViApprove(idDonVi,ngayLoc))
+                .Result(donBaoCaoService.getAllDonBaoCaoByDonViApprove(idDonVi,ngayLoc,loaiDonBaoCao.toString() ))
                 .message("Lấy thông tin đơn báo cáo thành công")
                 .success(true)
                 .code(0)

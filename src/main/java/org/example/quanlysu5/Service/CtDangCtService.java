@@ -16,10 +16,10 @@ public interface CtDangCtService {
     CtDangCtResponse getAllByIdDonVi(String idDonVi);
     CtDangCtResponse create(CtDangCtRequest request,String idNguoiTao);
     CtDangCtResponse update(CtDangCtForm update,String idCtDangCt);
-    List<CtDangCtResponse> getAllCtDangCtDonViConByDonVi(String idDonVi, LocalDate ngayLoc);
-    CtDangCtResponse getAllCtDangCtByDonVi(String idDonVi, LocalDate ngayLoc);
+    List<CtDangCtResponse> getAllCtDangCtDonViConByDonVi(String idDonVi, LocalDate ngayLoc,String loaiDonBaoCao);
+    CtDangCtResponse getAllCtDangCtByDonVi(String idDonVi, LocalDate ngayLoc,String loaiBaoBan);
     List<CtDangCtResponse> getAllCtDangCtByDonViVaKhoangThoiGian(String idDonVi, LocalDate start, LocalDate end);
-    CtDangCtResponse getAllCtDangCtoByDonViApprove(String idDonVi, LocalDate ngayLoc);
+    CtDangCtResponse getAllCtDangCtoByDonViApprove(String idDonVi, LocalDate ngayLoc,String loaiDonBaoCao);
     CtDangCtEntity getById(String id);
     CtDangCtResponse getByIdResponse(String id);
     CtDangCtResponse updateStatusApprove(String id);

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
+import org.example.quanlysu5.Enum.LoaiDonBaoCao;
 import org.example.quanlysu5.Module.BaseEntity;
 import org.example.quanlysu5.Module.CaTrucEntity;
 import org.example.quanlysu5.Module.DonViEntity;
@@ -26,6 +27,7 @@ public class DonBaoCaoRequest {
     String trucBanChiHuy;
     String trucBanTacChien;
     String  thongTinVang;
+    LoaiDonBaoCao loaiDonBaoCao;
     //ca trực dựa trên thời gian tạo phiếu báo cáo mà tìm đc ca trực
     String donVi;
 }

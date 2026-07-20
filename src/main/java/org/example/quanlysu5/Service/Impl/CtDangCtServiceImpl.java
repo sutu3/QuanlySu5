@@ -61,10 +61,12 @@ public class CtDangCtServiceImpl implements CtDangCtService {
                 continue;
             }
 
-                    ctDangCtRepo.findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndStatus(
-                            donViCon.getMaDonVi(),
-                            start,
-                            end,Status.Đã_Duyệt).ifPresent(ctEntities::add);
+            ctDangCtRepo.findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndStatusAndLoaiDonBaoCao(
+                    donViCon.getMaDonVi(),
+                    start,
+                    end,
+                    Status.Đã_Duyệt,
+                    LoaiDonBaoCao.DON_VI).ifPresent(ctEntities::add);
         }
 
         return ctEntities.stream()
@@ -83,6 +85,19 @@ public class CtDangCtServiceImpl implements CtDangCtService {
     public CtDangCtResponse create(CtDangCtRequest request,String idNguoiTao) {
         CtDangCtEntity ctDangCtEntity=ctDangCtMapper.toEntity(request);
         DonViEntity donViEntity=donViService.getById(request.getDonVi());
+
+        // Xác định loại báo cáo: null => DON_VI
+        LoaiDonBaoCao loai = request.getLoaiDonBaoCao() != null
+                ? request.getLoaiDonBaoCao()
+                : LoaiDonBaoCao.DON_VI;
+        // Chỉ đơn vị cấp Trung đoàn mới được tạo báo cáo tổng hợp
+        if (loai == LoaiDonBaoCao.TONG_HOP
+                && donViEntity.getCapDonVi() != CapDonVi.TRUNG_DOAN
+                && donViEntity.getCapDonVi() != CapDonVi.TIEU_DOAN) {
+            throw new AppException(ErrorCode.BAOCAO_TONGHOP_KHONG_HOP_LE);
+        }
+        ctDangCtEntity.setLoaiDonBaoCao(loai);
+
         ctDangCtEntity.setCreatedAt(request.getThoiGianBaoCao());
         ctDangCtEntity.setDonVi(donViEntity);
         ctDangCtEntity.setNguoiTao(idNguoiTao);
@@ -118,7 +133,7 @@ public class CtDangCtServiceImpl implements CtDangCtService {
     }
 
     @Override
-    public List<CtDangCtResponse> getAllCtDangCtDonViConByDonVi(String idDonVi, LocalDate ngayLoc) {
+    public List<CtDangCtResponse> getAllCtDangCtDonViConByDonVi(String idDonVi, LocalDate ngayLoc,String loaiDonBaoCao) {
 
         DonViEntity donViEntity = donViService.getById(idDonVi);
 
@@ -132,11 +147,12 @@ public class CtDangCtServiceImpl implements CtDangCtService {
         if (!donviCon.isEmpty()) {
             donviCon.forEach(dv -> {
                 log.warn(dv.getMaDonVi());
-                ctDangCtRepo.findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndStatus(
+                ctDangCtRepo.findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndStatusAndLoaiDonBaoCao(
                         dv.getMaDonVi(),
                         start,
                         end,
-                        Status.Đã_Duyệt
+                        Status.Đã_Duyệt,
+                        LoaiDonBaoCao.valueOf(loaiDonBaoCao)
                 ).ifPresent(ctDangCtEntities::add);
             });
         }
@@ -147,14 +163,14 @@ public class CtDangCtServiceImpl implements CtDangCtService {
     }
 
     @Override
-    public CtDangCtResponse getAllCtDangCtByDonVi(String idDonVi, LocalDate ngayLoc) {
+    public CtDangCtResponse getAllCtDangCtByDonVi(String idDonVi, LocalDate ngayLoc,String loaiBaoBan) {
         LocalDateTime start = ngayLoc.atStartOfDay();
         LocalDateTime end = ngayLoc.atTime(23, 59, 59);
         log.warn("start: "+start);
         log.warn("end: "+end);
-        log.warn(String.valueOf(ctDangCtRepo.findAllByDonVi_MaDonViAndThoiGianBaoCaoBetween(idDonVi,start,end).size()));
         CtDangCtEntity Reports =
-                ctDangCtRepo.findByDonVi_MaDonViAndThoiGianBaoCaoBetween(idDonVi, start, end);
+                ctDangCtRepo.findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndLoaiDonBaoCao(idDonVi, start, end,LoaiDonBaoCao.valueOf(loaiBaoBan))
+                        .orElseThrow(()->new AppException(ErrorCode.CTDANGCT_NOT_FOUND));
         return ctDangCtMapper.toResponse(Reports);
     }
 
@@ -166,12 +182,12 @@ public class CtDangCtServiceImpl implements CtDangCtService {
     }
 
     @Override
-    public CtDangCtResponse getAllCtDangCtoByDonViApprove(String idDonVi, LocalDate ngayLoc) {
+    public CtDangCtResponse getAllCtDangCtoByDonViApprove(String idDonVi, LocalDate ngayLoc,String loaiDonBaoCao) {
         LocalDateTime start = ngayLoc.atStartOfDay();
         LocalDateTime end = ngayLoc.atTime(23, 59, 59);
 
         CtDangCtEntity Reports =
-                ctDangCtRepo.findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndStatus(idDonVi, start, end,Status.Đã_Duyệt)
+                ctDangCtRepo.findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndStatusAndLoaiDonBaoCao(idDonVi, start, end,Status.Đã_Duyệt,LoaiDonBaoCao.valueOf(loaiDonBaoCao))
                         .orElseThrow(() -> new AppException(ErrorCode.CTDANGCT_NOT_FOUND));
         return ctDangCtMapper.toResponse(Reports);
     }
@@ -225,8 +241,7 @@ public class CtDangCtServiceImpl implements CtDangCtService {
     @Override
     public CtDangCtResponse updateStatusWaitingApprove(String id) {
         CtDangCtEntity ctDangCtEntity=getById(id);
-        if ((ctDangCtEntity.getDonVi().getCapDonVi().equals(CapDonVi.TIEU_DOAN) && !ctDangCtEntity.getDonVi().getKyhieuDonvi().matches("dbộ"))
-                || (ctDangCtEntity.getDonVi().getCapDonVi().equals(CapDonVi.TRUNG_DOAN) && !ctDangCtEntity.getDonVi().getKyhieuDonvi().matches("ebộ"))) {
+        if (ctDangCtEntity.getLoaiDonBaoCao()==LoaiDonBaoCao.TONG_HOP) {
             ctDangCtEntity.setStatus(Status.Chờ_Duyệt);
             nhatKyService.createNhatKy(NhatKyRequest.builder()
                     .doiTuong(DoiTuongNhatKy.CT_DANG_CT)

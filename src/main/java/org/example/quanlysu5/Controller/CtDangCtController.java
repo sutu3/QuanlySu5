@@ -8,7 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.quanlysu5.Dto.ApiResponse;
 import org.example.quanlysu5.Dto.Request.CtDangCtRequest;
 import org.example.quanlysu5.Dto.Request.GhiChuRequest;
+import org.example.quanlysu5.Dto.Request.LoaiBaoCaoRequest;
 import org.example.quanlysu5.Dto.Response.CtDangCt.CtDangCtResponse;
+import org.example.quanlysu5.Enum.LoaiDonBaoCao;
 import org.example.quanlysu5.Form.CtDangCtForm;
 import org.example.quanlysu5.Service.CtDangCtService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -68,12 +70,13 @@ public class CtDangCtController {
     @GetMapping("/search/DonVi/{idDonVi}/Status/Approvel")
     public ApiResponse<CtDangCtResponse> getDonBaoCaoByIdApprove(
             @PathVariable String idDonVi,
+            @RequestParam(required = false) LoaiDonBaoCao loaiDonBaoCao,
             @RequestParam
             @DateTimeFormat(pattern = "dd/MM/yyyy")
             LocalDate ngayLoc) {
 
         return ApiResponse.<CtDangCtResponse>builder()
-                .Result(ctDangCtService.getAllCtDangCtoByDonViApprove(idDonVi,ngayLoc))
+                .Result(ctDangCtService.getAllCtDangCtoByDonViApprove(idDonVi,ngayLoc,loaiDonBaoCao.toString()))
                 .message("Lấy thông tin đơn báo cáo thành công")
                 .success(true)
                 .code(0)
@@ -107,12 +110,13 @@ public class CtDangCtController {
     @GetMapping("/search/DonVi/{idDonVi}/children")
     public ApiResponse<List<CtDangCtResponse>> getDonBaoCaoDonViConById(
             @PathVariable String idDonVi,
+            @RequestParam(required = false) LoaiDonBaoCao loaiDonBaoCao,
             @RequestParam
             @DateTimeFormat(pattern = "dd/MM/yyyy")
             LocalDate ngayLoc) {
 
         return ApiResponse.<List<CtDangCtResponse>>builder()
-                .Result(ctDangCtService.getAllCtDangCtDonViConByDonVi(idDonVi,ngayLoc))
+                .Result(ctDangCtService.getAllCtDangCtDonViConByDonVi(idDonVi,ngayLoc,loaiDonBaoCao.toString()))
                 .message("Lấy danh sách chính trị đảng công tác của đơn vị con thành công")
                 .success(true)
                 .code(0)
@@ -121,12 +125,13 @@ public class CtDangCtController {
     @GetMapping("/search/DonVi/{idDonVi}")
     public ApiResponse<CtDangCtResponse> getDonBaoCaoById(
             @PathVariable String idDonVi,
+            @RequestParam(required = false) LoaiDonBaoCao loaiDonBaoCao,
             @RequestParam
             @DateTimeFormat(pattern = "dd/MM/yyyy")
             LocalDate ngayLoc) {
 
         return ApiResponse.<CtDangCtResponse>builder()
-                .Result(ctDangCtService.getAllCtDangCtByDonVi(idDonVi,ngayLoc))
+                .Result(ctDangCtService.getAllCtDangCtByDonVi(idDonVi,ngayLoc,loaiDonBaoCao.toString()))
                 .message("Lấy thông tin chính trị đảng công tác thành công")
                 .success(true)
                 .code(0)

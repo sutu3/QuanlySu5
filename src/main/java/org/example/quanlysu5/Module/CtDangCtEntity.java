@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
+import org.example.quanlysu5.Enum.LoaiDonBaoCao;
 import org.example.quanlysu5.Enum.Status;
 
 import java.time.LocalDateTime;
@@ -27,6 +28,10 @@ public class CtDangCtEntity extends BaseEntity{
 
     @Column(columnDefinition = "TEXT COMMENT 'Nội dung đột xuất'", nullable = false)
     String noiDungDotXuat;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "loai_don_bao_cao", columnDefinition = "VARCHAR(20) COMMENT 'Loại báo cáo: DON_VI hoặc TONG_HOP'")
+    LoaiDonBaoCao loaiDonBaoCao;
 
     @Column(columnDefinition = "TEXT COMMENT 'Kết quả'", nullable = false)
     String ketQua;

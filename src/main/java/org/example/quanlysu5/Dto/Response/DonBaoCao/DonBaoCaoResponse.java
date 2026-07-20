@@ -9,6 +9,7 @@ import lombok.experimental.SuperBuilder;
 import org.example.quanlysu5.Dto.Response.CaTruc.CaTrucNoList;
 import org.example.quanlysu5.Dto.Response.DonVi.DonViNoList;
 import org.example.quanlysu5.Dto.Response.TaiKhoan.TaiKhoanNoList;
+import org.example.quanlysu5.Enum.LoaiDonBaoCao;
 import org.example.quanlysu5.Enum.Status;
 import org.example.quanlysu5.Module.CaTrucEntity;
 import org.example.quanlysu5.Module.DonViEntity;
@@ -32,6 +33,7 @@ public class DonBaoCaoResponse {
     String trucBanTacChien;
     Status status;
     LocalDateTime thoiGianBaoCao;
+    LoaiDonBaoCao loaiDonBaoCao;
     String  thongTinVang;
     CaTrucNoList caTruc;
     DonViNoList donVi;

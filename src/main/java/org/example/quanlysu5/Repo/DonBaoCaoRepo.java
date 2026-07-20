@@ -1,5 +1,6 @@
 package org.example.quanlysu5.Repo;
 
+import org.example.quanlysu5.Enum.LoaiDonBaoCao;
 import org.example.quanlysu5.Enum.Status;
 import org.example.quanlysu5.Module.DonBaoCaoEntity;
 import org.example.quanlysu5.Module.DonViEntity;
@@ -18,6 +19,27 @@ public interface DonBaoCaoRepo extends JpaRepository<DonBaoCaoEntity,String>, Jp
 
     Boolean existsByDonViAndThoiGianBaoCaoBetween(DonViEntity DonVi, LocalDateTime start,
                                                   LocalDateTime end);
+    Optional<DonBaoCaoEntity> findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndLoaiDonBaoCao(
+            String idDonVi,
+            LocalDateTime start,
+            LocalDateTime end,
+            LoaiDonBaoCao loaiDonBaoCao
+    );
+
+    Optional<DonBaoCaoEntity> findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndStatusAndLoaiDonBaoCao(
+            String idDonVi,
+            LocalDateTime start,
+            LocalDateTime end,
+            Status status,
+            LoaiDonBaoCao loaiDonBaoCao
+    );
+
+    boolean existsByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndLoaiDonBaoCao(
+            String idDonVi,
+            LocalDateTime start,
+            LocalDateTime end,
+            LoaiDonBaoCao loaiDonBaoCao
+    );
     Optional<DonBaoCaoEntity> findByDonVi_MaDonViAndThoiGianBaoCaoBetween(
             String idDonVi,
             LocalDateTime start,
