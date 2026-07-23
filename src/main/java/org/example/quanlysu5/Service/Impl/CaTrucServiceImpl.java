@@ -188,17 +188,7 @@ public class CaTrucServiceImpl implements CaTrucService {
         TrucChiHuyEntity trucChiHuy=trucChiHuyService.getByIdNguoiTruc(update.getTrucChiHuy());
         caTruc.setTrucChiHuy(trucChiHuy);
         caTruc.setTrucBanTacChien(trucBanTacChien);
-        if(donBaoCaoRepo.existsByCaTruc_IdCatruc(idCaTruc)){
-            nhatKyService.createNhatKy(NhatKyRequest.builder()
-                    .doiTuong(DoiTuongNhatKy.CA_TRUC)
-                    .hanhDong(HanhDongNhatKy.UPDATE)
-                    .doiTuongId(idCaTruc)
-                    .taiKhoan(SecurityUtils.getClaim("sub"))
-                    .trangThai(TrangThaiNhatKy.THAT_BAI)
-                    .moTa("Tài khoản " + SecurityUtils.getUsername() + " cập nhập thông tin ca trực thất bại do "+ErrorCode.SHIFT_CANNOT_UPDATE_BECAUSE_REPORT_EXISTS)
-                    .build());
-            throw new AppException(ErrorCode.SHIFT_CANNOT_UPDATE_BECAUSE_REPORT_EXISTS);
-        }
+
         caTrucRepo.save(caTruc);
         nhatKyService.createNhatKy(NhatKyRequest.builder()
                 .doiTuong(DoiTuongNhatKy.CA_TRUC)

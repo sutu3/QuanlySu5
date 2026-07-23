@@ -49,12 +49,14 @@ public interface CtDangCtRepo extends JpaRepository<CtDangCtEntity,String> {
         ON ctdang.ma_don_vi = dv.ma_don_vi
     WHERE dv.ma_don_vi REGEXP CONCAT('^', :maDonViCha, '\\\\.[0-9]{3}$')
       AND ctdang.thoi_gian_bao_cao BETWEEN :start AND :end
-      AND ctdang.status = 'Đã_Duyệt'
+      AND ctdang.status = 'Đã_Duyệt' AND ctdang.loai_don_bao_cao = :loaiBaoCao
 """, nativeQuery = true)
     List<CtDangCtEntity> findAllCap2ByThoiGian(
             @Param("maDonViCha") String maDonViCha,
             @Param("start") LocalDateTime start,
-            @Param("end") LocalDateTime end
+            @Param("end") LocalDateTime end,
+                        @Param("loaiBaoCao") LoaiDonBaoCao loaiBaoCao
+
     );
     CtDangCtEntity findByDonVi_MaDonViAndThoiGianBaoCaoBetween(
             String idDonVi,

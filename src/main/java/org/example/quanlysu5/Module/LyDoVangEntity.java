@@ -18,7 +18,7 @@ public class LyDoVangEntity extends BaseEntity{
     @Column(name = "id_cap_bac",columnDefinition = "VARCHAR(36) COMMENT 'Id của lý do vắng'")
     String idLyDoVang;
 
-    @Column(columnDefinition = "VARCHAR(255) COMMENT 'lý do vắng'", nullable = false)
+    @Column(columnDefinition = "TEXT COMMENT 'lý do vắng'", nullable = false)
     String lyDoVang;
 
 

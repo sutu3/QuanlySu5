@@ -1,5 +1,6 @@
 package org.example.quanlysu5.Repo;
 
+import org.example.quanlysu5.Enum.LoaiDonBaoCao;
 import org.example.quanlysu5.Module.LyDoVangEntity;
 import org.example.quanlysu5.Module.NhiemVuNgayEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,7 +17,7 @@ public interface NhiemVuNgayRepo extends JpaRepository<NhiemVuNgayEntity, String
 
     Optional<NhiemVuNgayEntity> findByDonBaoCao_idDonBaoCao(String idDonBaoCao);
 
-    Optional<NhiemVuNgayEntity> findByDonBaoCao_DonVi_MaDonViAndDonBaoCao_ThoiGianBaoCaoBetween(String maDonVi
+    Optional<NhiemVuNgayEntity> findByDonBaoCao_DonVi_MaDonViAndDonBaoCao_ThoiGianBaoCaoBetweenAndDonBaoCao_LoaiDonBaoCao(String maDonVi
             , LocalDateTime start,
-                                                                                      LocalDateTime end);
+                                                                                                                          LocalDateTime end, LoaiDonBaoCao loaiDonBaoCao);
 }

@@ -93,7 +93,10 @@ public class CtDangCtServiceImpl implements CtDangCtService {
         // Chỉ đơn vị cấp Trung đoàn mới được tạo báo cáo tổng hợp
         if (loai == LoaiDonBaoCao.TONG_HOP
                 && donViEntity.getCapDonVi() != CapDonVi.TRUNG_DOAN
-                && donViEntity.getCapDonVi() != CapDonVi.TIEU_DOAN) {
+                && donViEntity.getCapDonVi() != CapDonVi.TIEU_DOAN
+                && (donViEntity.getCapDonVi() != CapDonVi.BAN&&donViEntity.getKyhieuDonvi()!="BCT")
+                && (donViEntity.getCapDonVi() != CapDonVi.PHONG&&donViEntity.getKyhieuDonvi()!="pct")
+        ) {
             throw new AppException(ErrorCode.BAOCAO_TONGHOP_KHONG_HOP_LE);
         }
         ctDangCtEntity.setLoaiDonBaoCao(loai);
@@ -241,8 +244,10 @@ public class CtDangCtServiceImpl implements CtDangCtService {
     @Override
     public CtDangCtResponse updateStatusWaitingApprove(String id) {
         CtDangCtEntity ctDangCtEntity=getById(id);
-        if (ctDangCtEntity.getLoaiDonBaoCao()==LoaiDonBaoCao.TONG_HOP) {
-            ctDangCtEntity.setStatus(Status.Chờ_Duyệt);
+        if (ctDangCtEntity.getLoaiDonBaoCao() == LoaiDonBaoCao.TONG_HOP
+                && !"pct".equals(ctDangCtEntity.getDonVi().getKyhieuDonvi())
+                && !"BCT".equals(ctDangCtEntity.getDonVi().getKyhieuDonvi())
+        ) {            ctDangCtEntity.setStatus(Status.Chờ_Duyệt);
             nhatKyService.createNhatKy(NhatKyRequest.builder()
                     .doiTuong(DoiTuongNhatKy.CT_DANG_CT)
                     .hanhDong(HanhDongNhatKy.UPDATE)

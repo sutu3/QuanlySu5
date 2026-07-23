@@ -123,14 +123,29 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
 
         if (!donviCon.isEmpty()) {
             donviCon.forEach(dv -> {
-                log.warn(dv.getMaDonVi());
-                DonBaoCaoRepo.findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndStatusAndLoaiDonBaoCao(
-                        dv.getMaDonVi(),
-                        start,
-                        end,
-                        Status.Đã_Duyệt,
-                        LoaiDonBaoCao.valueOf(loaiBaoBan)
-                ).ifPresent(donBaoCaoEntities::add);
+                List<DonBaoCaoEntity> reports =
+                        DonBaoCaoRepo.findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndStatusAndLoaiDonBaoCao(
+                                dv.getMaDonVi(),
+                                start,
+                                end,
+                                Status.Đã_Duyệt,
+                                LoaiDonBaoCao.valueOf(loaiBaoBan)
+                        );
+
+                log.warn("Đơn vị: {}, số lượng báo cáo: {}", dv.getMaDonVi(), reports.size());
+
+                for (DonBaoCaoEntity report : reports) {
+                    log.warn(
+                            "ID={}, Loại={}, Trạng thái={}, Thời gian={}, Người tạo={}",
+                            report.getIdDonBaoCao(),
+                            report.getLoaiDonBaoCao(),
+                            report.getStatus(),
+                            report.getThoiGianBaoCao(),
+                            report.getNguoiTao()
+                    );
+                }
+
+                donBaoCaoEntities.addAll(reports);
             });
         }
 
@@ -143,6 +158,7 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
     public DonBaoCaoResponse getAllDonBaoCaoByDonVi(String idDonVi, LocalDate ngayLoc,String loaiBaoBan) {
         LocalDateTime start = ngayLoc.atStartOfDay();
         LocalDateTime end = ngayLoc.atTime(23, 59, 59);
+        log.warn("ID ĐƠN VỊ: "+idDonVi);
 
         DonBaoCaoEntity Reports =
                 DonBaoCaoRepo.findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndLoaiDonBaoCao(
@@ -200,6 +216,8 @@ public class DonBaoCaoServiceImpl implements DonBaoCaoService {
                 .tieuDe("Báo cáo đã được duyệt")
                 .build();
         myWebSocketHandler.sendToUser(donBaoCaoEntity.getNguoiTao(), jsonMessage, thongBaoRequest);
+        myWebSocketHandler.sendToDonVi(donBaoCaoEntity.getDonVi().getDonViCha().getMaDonVi(), jsonMessage, thongBaoRequest);
+
         String jsonMessageDonVi = String.format(
                 "{\"title\":\"Đã duyệt báo cáo\",\"message\":\"Báo cáo của đơn vị %s đã được phê duyệt và hoàn tất xử lý\",\"type\":\"SUCCESS\"}",
                 donBaoCaoEntity.getDonVi().getTenDonvi()

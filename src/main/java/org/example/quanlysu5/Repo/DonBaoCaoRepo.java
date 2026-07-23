@@ -26,7 +26,7 @@ public interface DonBaoCaoRepo extends JpaRepository<DonBaoCaoEntity,String>, Jp
             LoaiDonBaoCao loaiDonBaoCao
     );
 
-    Optional<DonBaoCaoEntity> findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndStatusAndLoaiDonBaoCao(
+    List<DonBaoCaoEntity> findByDonVi_MaDonViAndThoiGianBaoCaoBetweenAndStatusAndLoaiDonBaoCao(
             String idDonVi,
             LocalDateTime start,
             LocalDateTime end,
@@ -66,11 +66,13 @@ public interface DonBaoCaoRepo extends JpaRepository<DonBaoCaoEntity,String>, Jp
     WHERE dv.ma_don_vi REGEXP CONCAT('^', :maDonViCha, '\\\\.[0-9]{3}$')
       AND dbc.thoi_gian_bao_cao BETWEEN :start AND :end
       AND dbc.status = 'Đã_Duyệt'
+      AND dbc.loai_don_bao_cao = :loaiBaoCao
 """, nativeQuery = true)
     List<DonBaoCaoEntity> findAllCap2ByThoiGian(
             @Param("maDonViCha") String maDonViCha,
             @Param("start") LocalDateTime start,
-            @Param("end") LocalDateTime end
+            @Param("end") LocalDateTime end,
+            @Param("loaiBaoCao") LoaiDonBaoCao loaiBaoCao
     );
 
 

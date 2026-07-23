@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.example.quanlysu5.Dto.Request.NhiemVuNgayRequest;
 import org.example.quanlysu5.Dto.Response.NhiemvuNgay.NhiemVuNgayResponse;
+import org.example.quanlysu5.Enum.LoaiDonBaoCao;
 import org.example.quanlysu5.Exception.AppException;
 import org.example.quanlysu5.Exception.ErrorCode;
 import org.example.quanlysu5.Form.NhiemVuNgayForm;
@@ -79,7 +80,7 @@ public class NhiemVuNgayServiceImpl implements NhiemVuNgayService {
     }
 
     @Override
-    public List<NhiemVuNgayResponse> getAllListByIdDonVi(String idDonVi, LocalDate ngayLoc) {
+    public List<NhiemVuNgayResponse> getAllListByIdDonVi(String idDonVi, LocalDate ngayLoc, String loaiDonBaoCao) {
         DonViEntity dvi = donViService.getById(idDonVi);
         List<DonViEntity> donviCon = dvi.getDonViCon();
         List<NhiemVuNgayEntity> ListNv = new ArrayList<>();
@@ -88,8 +89,8 @@ public class NhiemVuNgayServiceImpl implements NhiemVuNgayService {
         if (!donviCon.isEmpty()) {
             donviCon.forEach(dv -> {
                 log.warn(dv.getMaDonVi());
-                nhiemVuNgayRepo.findByDonBaoCao_DonVi_MaDonViAndDonBaoCao_ThoiGianBaoCaoBetween(
-                        dv.getMaDonVi(), start, end
+                nhiemVuNgayRepo.findByDonBaoCao_DonVi_MaDonViAndDonBaoCao_ThoiGianBaoCaoBetweenAndDonBaoCao_LoaiDonBaoCao(
+                        dv.getMaDonVi(), start, end,LoaiDonBaoCao.valueOf(loaiDonBaoCao)
                 ).ifPresent(ListNv::add);
             });
         }

@@ -54,7 +54,7 @@ public class DonBaoCaoEntity extends BaseEntity{
     @Column(name = "nguoi_tao", columnDefinition = "TEXT COMMENT 'người tạo'")
     String  nguoiTao;
 
-    @Column(name = "chi_tiet_vang", columnDefinition = "TEXT COMMENT 'chi tiet vắng'")
+    @Column(name = "chi_tiet_vang", columnDefinition = "LONGTEXT COMMENT 'chi tiet vắng'")
     String  chiTietVang;
 
     @Column(name = "ghi_chu", columnDefinition = "TEXT COMMENT 'ghi chú'")

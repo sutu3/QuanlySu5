@@ -18,5 +18,5 @@ public interface NhiemVuNgayService {
 
     NhiemVuNgayResponse updateNhiemVuNgay(NhiemVuNgayForm update, String nhiemVuNgay);
 
-    List<NhiemVuNgayResponse> getAllListByIdDonVi(String idDonVi, LocalDate ngayLoc);
+    List<NhiemVuNgayResponse> getAllListByIdDonVi(String idDonVi, LocalDate ngayLoc, String loaiDonBaoCao);
 }

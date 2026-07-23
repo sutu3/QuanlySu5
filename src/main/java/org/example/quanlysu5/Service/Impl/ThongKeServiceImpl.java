@@ -9,6 +9,7 @@ import org.example.quanlysu5.Dto.Response.CtDangCt.DashboardCtDangCtResponse;
 import org.example.quanlysu5.Dto.Response.CtDangCt.ThongKeDonViCtDangCtResponse;
 import org.example.quanlysu5.Dto.Response.ThongKe.*;
 import org.example.quanlysu5.Enum.CapDonVi;
+import org.example.quanlysu5.Enum.LoaiDonBaoCao;
 import org.example.quanlysu5.Hepler.SecurityUtils;
 import org.example.quanlysu5.Hepler.TimeUtils;
 import org.example.quanlysu5.Module.CtDangCtEntity;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -46,9 +48,12 @@ public class ThongKeServiceImpl implements ThongKeService {
         LocalDateTime start = ngayBaoCao.atStartOfDay();
         LocalDateTime end = ngayBaoCao.atTime(23,59,59);
 
-        List<DonBaoCaoEntity> reports =
-                donBaoCaoRepo.findAllCap2ByThoiGian(taikhoan.getDonVi().getCapDonVi()== CapDonVi.SU_DOAN||taikhoan.getDonVi().getCapDonVi()== CapDonVi.PHONG?"GS003":taikhoan.getDonVi().getMaDonVi(),start,end);
+        String maDonVi=taikhoan.getDonVi().getCapDonVi()== CapDonVi.SU_DOAN||taikhoan.getDonVi().getCapDonVi()== CapDonVi.PHONG?"GS003":taikhoan.getDonVi().getMaDonVi();
 
+        List<DonBaoCaoEntity> reports = Stream.concat(
+                donBaoCaoRepo.findAllCap2ByThoiGian(maDonVi, start, end,LoaiDonBaoCao.TONG_HOP).stream(),
+                donBaoCaoRepo.findAllCap2ByThoiGian(maDonVi, start, end,LoaiDonBaoCao.DON_VI).stream()
+        ).toList();
         // ======================
         // Tổng hợp quân số
         // ======================
@@ -79,6 +84,10 @@ public class ThongKeServiceImpl implements ThongKeService {
 
         List<ThongKeDonViResponse> danhSachDonVi =
                 reports.stream()
+                        .filter(rp ->
+                                !(rp.getDonVi().getCapDonVi() == CapDonVi.TRUNG_DOAN
+                                        && rp.getLoaiDonBaoCao() == LoaiDonBaoCao.DON_VI)
+                        )
                         .map(report -> {
 
                             double tyLe =
@@ -227,10 +236,13 @@ public class ThongKeServiceImpl implements ThongKeService {
     public DashboardCtDangCtResponse thongKeDashboard(LocalDate date) {
         TaikhoanEntity taikhoan= taiKhoanService.getTaiKhoanById(SecurityUtils.getClaim("sub"));
         LocalDateTime start = date.atStartOfDay();
-        LocalDateTime end = date.atTime(23,59,59);;
+        LocalDateTime end = date.atTime(23,59,59);
+        String maDonVi=taikhoan.getDonVi().getCapDonVi()== CapDonVi.SU_DOAN||taikhoan.getDonVi().getCapDonVi()== CapDonVi.PHONG?"GS003":taikhoan.getDonVi().getMaDonVi();
 
-        List<CtDangCtEntity> list =
-                ctDangCtRepo.findAllCap2ByThoiGian(taikhoan.getDonVi().getCapDonVi()== CapDonVi.SU_DOAN||taikhoan.getDonVi().getCapDonVi()== CapDonVi.PHONG?"GS003":taikhoan.getDonVi().getMaDonVi(),start, end);
+        List<CtDangCtEntity> list = Stream.concat(
+                ctDangCtRepo.findAllCap2ByThoiGian(maDonVi, start, end,LoaiDonBaoCao.TONG_HOP).stream(),
+                ctDangCtRepo.findAllCap2ByThoiGian(maDonVi, start, end,LoaiDonBaoCao.DON_VI).stream()
+        ).toList();
         int tongDonVi = list.size();
 
         int donViCoKienNghi = (int) list.stream()
@@ -249,6 +261,11 @@ public class ThongKeServiceImpl implements ThongKeService {
 
         List<ThongKeDonViCtDangCtResponse> donViResponses =
                 list.stream()
+                        .filter(rp ->
+                                !(rp.getDonVi().getCapDonVi() == CapDonVi.TRUNG_DOAN
+                                        && rp.getLoaiDonBaoCao() == LoaiDonBaoCao.DON_VI)||!(rp.getDonVi().getCapDonVi() == CapDonVi.PHONG
+                                        && rp.getLoaiDonBaoCao() == LoaiDonBaoCao.DON_VI)
+                        )
                         .map(x -> {
 
                             long soKienNghi =
@@ -302,11 +319,12 @@ public class ThongKeServiceImpl implements ThongKeService {
     private int tongHienDienTheoNgay(LocalDate ngay) {
 
         LocalDateTime start = ngay.atStartOfDay();
-        LocalDateTime end = ngay.atTime(23,59,59);
+        LocalDateTime end = ngay.atTime(23, 59, 59);
 
-        return donBaoCaoRepo
-                .findAllCap2ByThoiGian("GS003",start,end)
-                .stream()
+        return Stream.concat(
+                        donBaoCaoRepo.findAllCap2ByThoiGian("GS003", start, end,LoaiDonBaoCao.TONG_HOP).stream(),
+                        donBaoCaoRepo.findAllCap2ByThoiGian("GS003", start, end,LoaiDonBaoCao.DON_VI).stream()
+                )
                 .mapToInt(DonBaoCaoEntity::getQuanSoHienDien)
                 .sum();
     }

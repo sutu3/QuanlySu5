@@ -40,6 +40,7 @@ springdoc:
     swagger-ui:
         path: /swagger-ui.html
 
+
 jwt:
     valid-duration: 3600
     refreshable-duration: 360000
